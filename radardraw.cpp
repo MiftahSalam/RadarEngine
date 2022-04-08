@@ -1,7 +1,7 @@
 #include "radardraw.h"
 #include "radarengine.h"
 
-//#include <QOpenGLFunctions>
+#include <QOpenGLFunctions_3_3_Compatibility>
 
 using namespace RadarEngine;
 
@@ -228,12 +228,9 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
 
 void RDVert::DrawRadarImage()
 {
-//    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-//    f->glEnableVertexAttribArray(GL_VERTEX_ARRAY);
-//    f->glEnableVertexAttribArray(GL_COLOR_ARRAY);
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
+    QOpenGLFunctions_3_3_Compatibility *f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Compatibility>();
+    f->glEnableClientState(GL_VERTEX_ARRAY);
+    f->glEnableClientState(GL_COLOR_ARRAY);
 
 //    qDebug()<<Q_FUNC_INFO;
 //    quint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -247,20 +244,14 @@ void RDVert::DrawRadarImage()
             continue;
         }
         */
-//        f->glVertexAttribPointer(GL_VERTEX_ATTRIB_ARRAY_POINTER, 2, GL_FLOAT, true, sizeof(VertexPoint), &line->points[0].x);
-//        f->glVertexAttribPointer(GL_COLOR_ARRAY, 2, GL_FLOAT, true, sizeof(VertexPoint), &line->points[0].x);
-//        f->glDrawArrays(GL_TRIANGLES, 0, line->count);
-
-        glVertexPointer(2, GL_FLOAT, sizeof(VertexPoint), &line->points[0].x);
-        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
-        glDrawArrays(GL_TRIANGLES, 0, line->count);
-        //        glDrawArrays(GL_POINTS, 0, line->count);
+        f->glVertexPointer(2, GL_FLOAT, sizeof(VertexPoint), &line->points[0].x);
+        f->glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
+        f->glDrawArrays(GL_TRIANGLES, 0, line->count);
+//        f->glDrawArrays(GL_POINTS, 0, line->count);
     }
 
-//    f->glDisableVertexAttribArray(GL_VERTEX_ARRAY);
-//    f->glDisableVertexAttribArray(GL_COLOR_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-    glDisableClientState(GL_COLOR_ARRAY);
+    f->glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+    f->glDisableClientState(GL_COLOR_ARRAY);
 }
 
 

@@ -62,7 +62,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 
 void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
 {
-    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
+//    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
 }
 
 void RadarEngine::RadarEngine::trigger_ReqTx()
@@ -85,7 +85,7 @@ void RadarEngine::RadarEngine::timerTimeout()
     const RadarState state_radar = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
     const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
 
-    qDebug()<<Q_FUNC_INFO<<"state_radar"<<(int)state_radar;
+//    qDebug()<<Q_FUNC_INFO<<"state_radar"<<(int)state_radar;
 
     if(state_radar == RADAR_TRANSMIT && TIMED_OUT(now,stay_alive_timeout))
     {
@@ -133,8 +133,8 @@ void RadarEngine::RadarEngine::trigger_ReqControlChange(int ct, int val)
 void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QByteArray data, int dataSize)
 
 {
-//    qDebug()<<Q_FUNC_INFO<<"radarId"<<radarId<<m_range_meters<<m_old_range<<angle_raw;
-    quint64 now = QDateTime::currentMSecsSinceEpoch();
+//    qDebug()<<Q_FUNC_INFO<<"radarId"<<m_range_meters<<m_old_range<<angle_raw;
+    quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
     radar_timeout = now + WATCHDOG_TIMEOUT;
     data_timeout = now + DATA_TIMEOUT;
 //    state_radar = RADAR_TRANSMIT; //need for offline mode
@@ -187,6 +187,7 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
         if(mti_enable)
             old_strength_info[bearing][radius] = new_strength_info[bearing][radius];
     }
+    raw_data[RETURNS_PER_LINE-1] = 255; //range rings
 
     /*check Guardzone*/
     //    if(gz_settings.show && gz_settings.enable_alarm)

@@ -24,9 +24,9 @@ unix: {
     LIBS += -L/usr/lib/RadarConfigLib/ -lRadarConfig
 
 } else:win32 {
-        LIBS += -LC:\Users\miftah\RadarConfigLib\lib\ -lRadarConfig
+    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\ -lRadarConfig
+    LIBS += -lOpenGL32
 	
-        INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include
-        DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include
-
+    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include
+    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include
 }

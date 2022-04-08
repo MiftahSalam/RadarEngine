@@ -42,13 +42,8 @@ public:
     void ProcessRadarSpoke(int angle, quint8 *data, size_t len);
 
     ~RDVert();
+
 private:
-    RadarEngine* m_ri;
-
-    static const int VERTEX_PER_TRIANGLE = 3;
-    static const int VERTEX_PER_QUAD = 2 * VERTEX_PER_TRIANGLE;
-    static const int MAX_BLOBS_PER_LINE = RETURNS_PER_LINE;
-
     struct VertexPoint
     {
         GLfloat x;
@@ -67,9 +62,15 @@ private:
         size_t allocated;
     };
 
+    VertexLine m_vertices[LINES_PER_ROTATION];
+    RadarEngine* m_ri;
+
+    static const int VERTEX_PER_TRIANGLE = 3;
+    static const int VERTEX_PER_QUAD = 2 * VERTEX_PER_TRIANGLE;
+    static const int MAX_BLOBS_PER_LINE = RETURNS_PER_LINE;
+
     P2CLookupTable* m_polarLookup;
 
-    VertexLine m_vertices[LINES_PER_ROTATION];
     unsigned int m_count;
     bool m_oom;
 
