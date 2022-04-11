@@ -1,7 +1,7 @@
 #include "radardraw.h"
 #include "radarengine.h"
 
-#include <QOpenGLFunctions_3_3_Compatibility>
+#include <QOpenGLFunctions>
 
 using namespace RadarEngine;
 
@@ -10,7 +10,7 @@ P2CLookupTable* GetP2CLookupTable()
 {
     if (!lookupTable)
     {
-        lookupTable = (P2CLookupTable*)malloc(sizeof(P2CLookupTable));
+        lookupTable = static_cast<P2CLookupTable*>(malloc(sizeof(P2CLookupTable)));
 
         if (!lookupTable)
         {
@@ -20,14 +20,14 @@ P2CLookupTable* GetP2CLookupTable()
 
         for (int arc = 0; arc < LINES_PER_ROTATION + 1; arc++)
         {
-            GLfloat sine = cosf((GLfloat)arc * M_PI * 2 / LINES_PER_ROTATION);
-            GLfloat cosine = sinf((GLfloat)arc * M_PI * 2 / LINES_PER_ROTATION);
+            GLfloat sine = cosf(static_cast<GLfloat>(arc * M_PI * 2 / LINES_PER_ROTATION));
+            GLfloat cosine = sinf(static_cast<GLfloat>(arc * M_PI * 2 / LINES_PER_ROTATION));
             for (int radius = 0; radius < RETURNS_PER_LINE + 1; radius++)
             {
-                lookupTable->x[arc][radius] = (GLfloat)radius * cosine/RETURNS_PER_LINE;
-                lookupTable->y[arc][radius] = (GLfloat)radius * sine/RETURNS_PER_LINE;
-                lookupTable->intx[arc][radius] = (int)(lookupTable->x[arc][radius]*RETURNS_PER_LINE);
-                lookupTable->inty[arc][radius] = (int)(lookupTable->y[arc][radius]*RETURNS_PER_LINE);
+                lookupTable->x[arc][radius] = static_cast<GLfloat>(radius) * cosine/RETURNS_PER_LINE;
+                lookupTable->y[arc][radius] = static_cast<GLfloat>(radius) * sine/RETURNS_PER_LINE;
+                lookupTable->intx[arc][radius] = static_cast<int>(lookupTable->x[arc][radius]*RETURNS_PER_LINE);
+                lookupTable->inty[arc][radius] = static_cast<int>(lookupTable->y[arc][radius]*RETURNS_PER_LINE);
 //                qDebug()<<Q_FUNC_INFO<<"arc"<<arc<<"rad"<<radius<<"x"<<lookupTable->intx[arc][radius]<<"y"<<lookupTable->inty[arc][radius];
             }
         }
@@ -52,7 +52,7 @@ RadarDraw* RadarDraw::make_Draw(RadarEngine *ri, int draw_method)
     default:
         qDebug()<<Q_FUNC_INFO<<"unsupported draw method "<<draw_method;
     }
-    return 0;
+    return nullptr;
 }
 
 RadarDraw::~RadarDraw() {}
@@ -73,6 +73,21 @@ QString RadarDraw::GetDrawingMethods() {
     count++;                                                 \
 }
 
+static const char *vertexShaderSource =
+      "attribute highp vec4 posAttr;\n"
+      "attribute lowp vec4 colAttr;\n"
+      "varying lowp vec4 col;\n"
+      "void main() {\n"
+      "   col = colAttr;\n"
+      "   gl_Position = posAttr;\n"
+      "}\n";
+
+  static const char *fragmentShaderSource =
+      "varying lowp vec4 col;\n"
+      "void main() {\n"
+      "   gl_FragColor = col;\n"
+      "}\n";
+
 RDVert::RDVert(RadarEngine* re):
     m_ri(re)
 {
@@ -81,14 +96,25 @@ RDVert::RDVert(RadarEngine* re):
         m_vertices[i].count = 0;
         m_vertices[i].allocated = 0;
         m_vertices[i].timeout = 0;
-        m_vertices[i].points = 0;
+        m_vertices[i].points = nullptr;
     }
     m_count = 0;
     m_oom = false;
 
     m_polarLookup = GetP2CLookupTable();
+
 }
 
+void RDVert::init(QObject *parent)
+{
+    m_program = new QOpenGLShaderProgram(parent);
+    m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
+    m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, fragmentShaderSource);
+    m_program->link();
+    m_posAttr = static_cast<GLuint>(m_program->attributeLocation("posAttr"));
+    m_colAttr = static_cast<GLuint>(m_program->attributeLocation("colAttr"));
+
+}
 void RDVert::SetBlob(VertexLine* line, int angle_begin, int angle_end, int r1, int r2, GLubyte red, GLubyte green,
                      GLubyte blue, GLubyte alpha)
 {
@@ -105,7 +131,7 @@ void RDVert::SetBlob(VertexLine* line, int angle_begin, int angle_end, int r1, i
     if (line->count + VERTEX_PER_QUAD > line->allocated)
     {
         const size_t extra = 8 * VERTEX_PER_QUAD;
-        line->points = (VertexPoint*)realloc(line->points, (line->allocated + extra) * sizeof(VertexPoint));
+        line->points = static_cast<VertexPoint*>(realloc(line->points, (line->allocated + extra) * sizeof(VertexPoint)));
         line->allocated += extra;
         m_count += extra;
         qDebug()<<"extra loc";
@@ -123,15 +149,15 @@ void RDVert::SetBlob(VertexLine* line, int angle_begin, int angle_end, int r1, i
 
     // First triangle
     //    qDebug()<<Q_FUNC_INFO<<arc1<<arc2<<r1<<r2;
-    ADD_VERTEX_POINT(arc1, r1, red, green, blue, alpha);
-    ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha);
-    ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha);
+    ADD_VERTEX_POINT(arc1, r1, red, green, blue, alpha)
+    ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha)
+    ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha)
 
     // Second triangle
 
-    ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha);
-    ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha);
-    ADD_VERTEX_POINT(arc2, r2, red, green, blue, alpha);
+    ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha)
+    ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha)
+    ADD_VERTEX_POINT(arc2, r2, red, green, blue, alpha)
 
     line->count = count;
     //    for(int i=0;i<line->count;i++)
@@ -145,7 +171,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
     QColor colour;
     BlobColour previous_colour = BLOB_NONE;
     GLubyte strength = 0;
-    quint64 now = QDateTime::currentMSecsSinceEpoch();
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
 
 //    qDebug()<<Q_FUNC_INFO;
 
@@ -164,7 +190,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
         static size_t INITIAL_ALLOCATION = 600;
         line->allocated = INITIAL_ALLOCATION * VERTEX_PER_QUAD;
         m_count += INITIAL_ALLOCATION * VERTEX_PER_QUAD;
-        line->points = (VertexPoint*)malloc(line->allocated * sizeof(VertexPoint));
+        line->points = static_cast<VertexPoint*>(malloc(line->allocated * sizeof(VertexPoint)));
         if (!line->points)
         {
             if (!m_oom)
@@ -198,7 +224,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
         else if (previous_colour == BLOB_NONE && actual_colour != BLOB_NONE)
         {
             // blob starts, no display, just register
-            r_begin = radius;
+            r_begin = static_cast<int>(radius);
             r_end = r_begin + 1;
             previous_colour = actual_colour;  // new color
         }
@@ -206,12 +232,12 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
         {
             colour = m_ri->m_colour_map_rgb[previous_colour];
 
-            SetBlob(line, angle, angle + 1, r_begin, r_end, colour.red(), colour.green(), colour.blue(), colour.alpha());
+            SetBlob(line, angle, angle + 1, r_begin, r_end, static_cast<GLubyte>(colour.red()), static_cast<GLubyte>(colour.green()), static_cast<GLubyte>(colour.blue()), static_cast<GLubyte>(colour.alpha()));
 
             previous_colour = actual_colour;
             if (actual_colour != BLOB_NONE)
             {  // change of color, start new blob
-                r_begin = radius;
+                r_begin = static_cast<int>(radius);
                 r_end = r_begin + 1;
             }
         }
@@ -222,17 +248,23 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
     {  // Draw final blob
         colour = m_ri->m_colour_map_rgb[previous_colour];
 
-        SetBlob(line, angle, angle + 1, r_begin, r_end, colour.red(), colour.green(), colour.blue(), colour.alpha());
+        SetBlob(line, angle, angle + 1, r_begin, r_end, static_cast<GLubyte>(colour.red()), static_cast<GLubyte>(colour.green()), static_cast<GLubyte>(colour.blue()), static_cast<GLubyte>(colour.alpha()));
     }
 }
 
 void RDVert::DrawRadarImage()
 {
-    QOpenGLFunctions_3_3_Compatibility *f = QOpenGLContext::currentContext()->versionFunctions<QOpenGLFunctions_3_3_Compatibility>();
-    f->glEnableClientState(GL_VERTEX_ARRAY);
-    f->glEnableClientState(GL_COLOR_ARRAY);
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_COLOR_ARRAY);
 
-//    qDebug()<<Q_FUNC_INFO;
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+    m_program->bind();
+//    f->glEnableVertexAttribArray(GL_VERTEX_ARRAY);
+//    f->glEnableVertexAttribArray(GL_COLOR_ARRAY);
+    f->glEnableVertexAttribArray(0);
+    f->glEnableVertexAttribArray(1);
+
+    //    qDebug()<<Q_FUNC_INFO;
 //    quint64 now = QDateTime::currentMSecsSinceEpoch();
 
     for (size_t i = 0; i < LINES_PER_ROTATION; i++)
@@ -244,19 +276,27 @@ void RDVert::DrawRadarImage()
             continue;
         }
         */
-        f->glVertexPointer(2, GL_FLOAT, sizeof(VertexPoint), &line->points[0].x);
-        f->glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
-        f->glDrawArrays(GL_TRIANGLES, 0, line->count);
-//        f->glDrawArrays(GL_POINTS, 0, line->count);
+//        glVertexPointer(2, GL_FLOAT, sizeof(VertexPoint), &line->points[0].x);
+//        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
+//        glDrawArrays(GL_TRIANGLES, 0, line->count);
+        f->glVertexAttribPointer(m_posAttr, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPoint), &line->points[0].x);
+        f->glVertexAttribPointer(m_colAttr, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(VertexPoint), &line->points[0].red);
+        f->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(line->count));
     }
 
-    f->glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-    f->glDisableClientState(GL_COLOR_ARRAY);
+//    f->glEnableVertexAttribArray(GL_VERTEX_ARRAY);
+//    f->glEnableVertexAttribArray(GL_COLOR_ARRAY);
+    f->glDisableVertexAttribArray(1);  // disable vertex arrays
+    f->glDisableVertexAttribArray(0);
+    m_program->release();
+//    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+//    glDisableClientState(GL_COLOR_ARRAY);
 }
 
 
 RDVert::~RDVert()
 {
+    delete m_program;
     for (size_t i = 0; i < LINES_PER_ROTATION; i++)
     {
         if (m_vertices[i].points)

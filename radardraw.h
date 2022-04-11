@@ -5,6 +5,7 @@
 #include "radarengine_global.h"
 
 #include <QtOpenGL/qgl.h>
+#include <QOpenGLShaderProgram>
 
 struct P2CLookupTable {
   GLfloat x[LINES_PER_ROTATION + 1][RETURNS_PER_LINE + 1];
@@ -25,6 +26,7 @@ class RadarDraw
 public:
     static RadarDraw* make_Draw(RadarEngine *re, int draw_method);
 
+    virtual void init(QObject *parent = nullptr) = 0;
     virtual void DrawRadarImage() = 0;
     virtual void ProcessRadarSpoke(int angle, quint8* data, size_t len) = 0;
 
@@ -38,10 +40,11 @@ class RDVert : public RadarDraw
 {
 public:
     RDVert(RadarEngine* re);
-    void DrawRadarImage();
-    void ProcessRadarSpoke(int angle, quint8 *data, size_t len);
+    void init(QObject *parent = nullptr) override;
+    void DrawRadarImage() override;
+    void ProcessRadarSpoke(int angle, quint8 *data, size_t len) override;
 
-    ~RDVert();
+    ~RDVert() override;
 
 private:
     struct VertexPoint
@@ -57,12 +60,12 @@ private:
     struct VertexLine
     {
         VertexPoint* points;
-        quint64 timeout;
+        qint64 timeout;
         size_t count;
         size_t allocated;
     };
-
     VertexLine m_vertices[LINES_PER_ROTATION];
+
     RadarEngine* m_ri;
 
     static const int VERTEX_PER_TRIANGLE = 3;
@@ -73,6 +76,10 @@ private:
 
     unsigned int m_count;
     bool m_oom;
+
+    GLuint m_posAttr;
+    GLuint m_colAttr;
+    QOpenGLShaderProgram *m_program;
 
     void SetBlob(VertexLine* line, int angle_begin, int angle_end, int r1, int r2, GLubyte red, GLubyte green, GLubyte blue,
                  GLubyte alpha);

@@ -2,6 +2,7 @@
 #include <radarconfig.h>
 
 #include <QUdpSocket>
+#include <QNetworkInterface>
 
 using namespace RadarEngine;
 
@@ -152,22 +153,22 @@ void RadarReceive::run()
     QUdpSocket socketReportReceive;
     QString data_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_DATA).toString();
     QString report_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_REPORT).toString();
-    uint data_port_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_DATA).toUInt();
-    uint reportport_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_REPORT).toUInt();
+    quint16 data_port_thread = static_cast<quint16> (RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_DATA).toUInt());
+    quint16 reportport_thread = static_cast<quint16>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_REPORT).toUInt());
     exit_req = false;
 
-    QHostAddress groupAddress = QHostAddress(data_thread);
+    QHostAddress groupAddressData(data_thread);
+    QHostAddress groupAddressReport(report_thread);
 
-    if(socketDataReceive.bind(QHostAddress::AnyIPv4, data_port_thread, QUdpSocket::ShareAddress))
+    if(socketDataReceive.bind(QHostAddress::AnyIPv4, data_port_thread, QUdpSocket::ShareAddress  | QUdpSocket::ReuseAddressHint))
     {
-        socketDataReceive.joinMulticastGroup(groupAddress);
+        socketDataReceive.joinMulticastGroup(groupAddressData);
         qDebug()<<Q_FUNC_INFO<<"bind data multicast access succesed"<<data_thread<<data_port_thread;
     }
 
-    groupAddress = QHostAddress(report_thread);
     if(socketReportReceive.bind(QHostAddress::AnyIPv4,reportport_thread, QUdpSocket::ShareAddress))
     {
-        socketReportReceive.joinMulticastGroup(groupAddress);
+        socketReportReceive.joinMulticastGroup(groupAddressReport);
         qDebug()<<Q_FUNC_INFO<<"bind report multicast access succesed"<<report_thread<<reportport_thread;
     }
 
@@ -179,7 +180,7 @@ void RadarReceive::run()
                 while (socketDataReceive.hasPendingDatagrams())
                 {
                     QByteArray datagram;
-                    datagram.resize(socketDataReceive.pendingDatagramSize());
+                    datagram.resize(static_cast<int>(socketDataReceive.pendingDatagramSize()));
                     socketDataReceive.readDatagram(datagram.data(), datagram.size());
 
                     processFrame(datagram,datagram.size());
@@ -189,10 +190,10 @@ void RadarReceive::run()
             else
             {
                 qDebug()<<Q_FUNC_INFO<<"try bind data multicast access ";
-                groupAddress = QHostAddress(data_thread);
+//                groupAddress = QHostAddress(data_thread);
                 if(socketDataReceive.bind(QHostAddress::AnyIPv4,data_port_thread, QUdpSocket::ShareAddress))
                 {
-                    socketDataReceive.joinMulticastGroup(groupAddress);
+                    socketDataReceive.joinMulticastGroup(groupAddressData);
                     qDebug()<<Q_FUNC_INFO<<"bind data multicast access succesed";
                 }
                 else
@@ -209,7 +210,7 @@ void RadarReceive::run()
             while (socketReportReceive.hasPendingDatagrams())
             {
                 QByteArray datagram;
-                datagram.resize(socketReportReceive.pendingDatagramSize());
+                datagram.resize(static_cast<int>(socketReportReceive.pendingDatagramSize()));
                 socketReportReceive.readDatagram(datagram.data(), datagram.size());
 
                 processReport(datagram,datagram.size());
@@ -219,10 +220,10 @@ void RadarReceive::run()
         else
         {
             qDebug()<<Q_FUNC_INFO<<"try bind report multicast access ";
-            groupAddress = QHostAddress(report_thread);
+//            groupAddress = QHostAddress(report_thread);
             if(socketReportReceive.bind(QHostAddress::AnyIPv4,reportport_thread, QUdpSocket::ShareAddress))
             {
-                socketReportReceive.joinMulticastGroup(groupAddress);
+                socketReportReceive.joinMulticastGroup(groupAddressReport);
                 qDebug()<<Q_FUNC_INFO<<"bind report multicast access succesed";
             }
             else
