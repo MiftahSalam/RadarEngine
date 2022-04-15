@@ -28,6 +28,7 @@ public:
 
     virtual void init(QObject *parent = nullptr) = 0;
     virtual void DrawRadarImage() = 0;
+    virtual void DrawRadarSweep(double angle) = 0;
     virtual void ProcessRadarSpoke(int angle, quint8* data, size_t len) = 0;
 
     virtual ~RadarDraw() = 0;
@@ -36,12 +37,46 @@ public:
     static QString GetDrawingMethods();
 };
 
+class RDShader : public RadarDraw
+{
+public:
+    RDShader(RadarEngine* re);
+    void init(QObject *parent = nullptr) override;
+    void DrawRadarImage() override;
+    virtual void DrawRadarSweep(double angle) override;
+    void ProcessRadarSpoke(int angle, quint8 *data, size_t len) override;
+
+    ~RDShader() override;
+
+
+private:
+    static const int SHADER_COLOR_CHANNELS = 4; // RGB + Alpha
+
+    unsigned char m_data[SHADER_COLOR_CHANNELS * LINES_PER_ROTATION * RETURNS_PER_LINE];
+    int m_start_line;  // First line received since last draw, or -1
+    int m_lines;       // # of lines received since last draw
+    int m_format;
+    //      QOpenGLTexture::TextureFormat m_format;
+    int m_channels;
+
+//    QVector<GLfloat> vertData;
+//    QOpenGLBuffer vbo;
+//    QOpenGLTexture *m_texture;
+    GLuint m_texture;
+    QOpenGLShader *m_fragment;
+    QOpenGLShader *m_vertex;
+    QOpenGLShaderProgram *m_program;
+    RadarEngine* m_re;
+
+};
+
 class RDVert : public RadarDraw
 {
 public:
     RDVert(RadarEngine* re);
     void init(QObject *parent = nullptr) override;
     void DrawRadarImage() override;
+    virtual void DrawRadarSweep(double angle) override;
     void ProcessRadarSpoke(int angle, quint8 *data, size_t len) override;
 
     ~RDVert() override;

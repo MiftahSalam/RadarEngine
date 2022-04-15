@@ -92,7 +92,7 @@ private:
     quint64 data_timeout;
     quint64 stay_alive_timeout;
 
-    uint m_range_meters;
+//    uint m_range_meters;
     uint m_old_range;
 
     RadarState cur_radar_state;

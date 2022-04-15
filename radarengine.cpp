@@ -27,7 +27,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     qDebug()<<Q_FUNC_INFO;
 
     radar_timeout = 0;
-    m_range_meters = 0;
+//    m_range_meters = 0;
 
     cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
     old_draw_trails = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
@@ -51,8 +51,8 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     connect(radarReceive,&RadarReceive::ProcessRadarSpoke,
             this,&RadarEngine::radarReceive_ProcessRadarSpoke);
 
-    connect(this,SIGNAL(signal_sendStby()),radarTransmit,SLOT(RadarStby()));
-    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
+//    connect(this,SIGNAL(signal_sendStby()),radarTransmit,SLOT(RadarStby()));
+//    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
     connect(this,SIGNAL(signal_stay_alive()),radarTransmit,SLOT(RadarStayAlive()));
     connect(instance,&RadarConfig::RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
 
@@ -63,6 +63,8 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
 {
 //    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
+    if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE) trigger_ReqRangeChange(val.toInt());
+    else if(key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME || key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE) trigger_clearTrail();
 }
 
 void RadarEngine::RadarEngine::trigger_ReqTx()
@@ -84,6 +86,7 @@ void RadarEngine::RadarEngine::timerTimeout()
 
     const RadarState state_radar = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
     const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    const int trail = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
 
 //    qDebug()<<Q_FUNC_INFO<<"state_radar"<<(int)state_radar;
 
@@ -116,12 +119,12 @@ void RadarEngine::RadarEngine::timerTimeout()
         ComputeTargetTrails();
         old_draw_trails = is_trail_enable;
     }
-    if(old_trail != is_trail_enable)
+    if(old_trail != trail)
     {
         ClearTrails();
         ComputeColourMap();
         ComputeTargetTrails();
-        old_trail = is_trail_enable;
+        old_trail = trail;
     }
 }
 
@@ -144,7 +147,7 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
 
     const bool heading_up = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
     const bool mti_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_CONTROL_MTI).toBool();
-    const bool mti = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_MTI).toInt();
+    const int mti = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_MTI).toInt();
     const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
     const double currentHeading = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
@@ -158,7 +161,7 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
 
     quint8 weakest_normal_blob = 50; //next load from configuration file
     quint8 *hist_data = m_history[bearing].line;
-    UINT8 *raw_data = (UINT8*)data.data();
+    UINT8 *raw_data = reinterpret_cast<UINT8*>(data.data());
 
     m_history[bearing].time = now;
     m_history[bearing].lat = currentOwnShipLat;
@@ -169,7 +172,7 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
         if(mti_enable)
         {
             new_strength_info[bearing][radius] = raw_data[radius];
-            if(abs((int)(old_strength_info[bearing][radius] - new_strength_info[bearing][radius])) < mti)
+            if(abs(static_cast<int>((old_strength_info[bearing][radius] - new_strength_info[bearing][radius]))) < mti)
                 raw_data[radius]=0;
         }
 
@@ -198,17 +201,18 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
     /*Trail handler*/
     if(is_trail_enable)
     {
-        if (m_old_range != m_range_meters && m_old_range != 0 && m_range_meters != 0)
+        const uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
+        if (m_old_range != cur_range && m_old_range != 0 && cur_range != 0)
         {
             // zoom trails
-            float zoom_factor = (float)m_old_range / (float)m_range_meters;
+            float zoom_factor = static_cast<float>(m_old_range) / static_cast<float>(cur_range);
             ZoomTrails(zoom_factor);
         }
-        if (m_old_range == 0 || m_range_meters == 0)
+        if (m_old_range == 0 || cur_range == 0)
         {
             ClearTrails();
         }
-        m_old_range = m_range_meters;
+        m_old_range = cur_range;
 
         // Relative trails
         quint8 *trail = m_trails.relative_trails[angle];
@@ -223,6 +227,7 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
 
                 raw_data[radius] = m_trail_colour[*trail];
             }
+//            qDebug()<<Q_FUNC_INFO<<"trail"<<radius<<*trail;
             trail++;
         }
     }
@@ -306,22 +311,26 @@ void RadarEngine::RadarEngine::ComputeColourMap()
         int r1 = 255.0;
         int g1 = 255.0;
         int b1 = 255.0;
+        int a1 = 255.0;
         int r2 = 0.0;
         int g2 = 0.0;
         int b2 = 0.0;
-        float delta_r = (float)((r2 - r1) / BLOB_HISTORY_COLOURS);
-        float delta_g = (float)((g2 - g1) / BLOB_HISTORY_COLOURS);
-        float delta_b = (float)((b2 - b1) / BLOB_HISTORY_COLOURS);
+        int a2 = 0.0;
+        float delta_r = static_cast<float>(((r2 - r1) / BLOB_HISTORY_COLOURS));
+        float delta_g = static_cast<float>((g2 - g1) / BLOB_HISTORY_COLOURS);
+        float delta_b = static_cast<float>((b2 - b1) / BLOB_HISTORY_COLOURS);
+        float delta_a = static_cast<float>((a2 - a1) / BLOB_HISTORY_COLOURS);
 
         for (BlobColour history = BLOB_HISTORY_0;
              history <= BLOB_HISTORY_MAX;
-             history = (BlobColour)(history + 1))
+             history = static_cast<BlobColour>(history + 1))
         {
             m_colour_map[history] = history;
-            m_colour_map_rgb[history] = QColor(r1, g1, b1);
-            r1 += (int)delta_r;
-            g1 += (int)delta_g;
-            b1 += (int)delta_b;
+            m_colour_map_rgb[history] = QColor(r1, g1, b1, a1);
+            r1 += static_cast<int>(delta_r);
+            g1 += static_cast<int>(delta_g);
+            b1 += static_cast<int>(delta_b);
+            a1 += static_cast<int>(delta_a);
         }
     }
 }
@@ -396,12 +405,14 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
 
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
-    if ((m_range_meters != (uint)new_range))
+    const uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
+    if ((cur_range != static_cast<uint>(new_range)))
     {
-        m_range_meters = new_range;
-        emit signal_range_change(new_range/10);
+        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range);
+//        m_range_meters = new_range;
+//        emit signal_range_change(new_range/10);
         ResetSpokes();
-        qDebug()<<Q_FUNC_INFO<<"detected spoke range change from "<<m_range_meters<<" to "<<new_range;
+        qDebug()<<Q_FUNC_INFO<<"detected spoke range change from "<<cur_range<<" to "<<new_range;
     }
 }
 
