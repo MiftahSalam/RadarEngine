@@ -98,6 +98,7 @@ private:
     RadarState cur_radar_state;
     bool old_draw_trails;
     int old_trail;
+    int old_preset;
 
     void ComputeColourMap();
     void ResetSpokes();

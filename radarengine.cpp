@@ -32,6 +32,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
     old_draw_trails = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
     old_trail = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
+    old_preset = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
 
     ComputeColourMap();
     ComputeTargetTrails();
@@ -108,6 +109,15 @@ void RadarEngine::RadarEngine::timerTimeout()
     {
         cur_radar_state = state_radar;
 //        emit signal_state_change();
+    }
+
+    const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+    if(old_preset != preset_color)
+    {
+        ClearTrails();
+        ComputeColourMap();
+        ComputeTargetTrails();
+        old_preset = preset_color;
     }
 
     if(old_draw_trails != is_trail_enable)
@@ -285,7 +295,13 @@ void RadarEngine::RadarEngine::ComputeColourMap()
     for (int i = 0; i < BLOB_COLOURS; i++)
         m_colour_map_rgb[i] = QColor(0, 0, 0);
 
-    QColor color = QColor(0, 255, 0);
+    const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+    QColor color;
+
+    if(preset_color == 0)
+        color = QColor(255, 255, 0);
+    else if(preset_color == 1)
+        color = QColor(0, 255, 0);
 
     m_colour_map_rgb[BLOB_STRONG] = color;
     m_colour_map_rgb[BLOB_INTERMEDIATE] = color;
@@ -321,15 +337,40 @@ void RadarEngine::RadarEngine::ComputeColourMap()
         float delta_b = static_cast<float>((b2 - b1) / BLOB_HISTORY_COLOURS);
         float delta_a = static_cast<float>((a2 - a1) / BLOB_HISTORY_COLOURS);
 
+        if(preset_color == 0)
+        {
+            r1 = 255.0;
+            g1 = 255.0;
+            b1 = 255.0;
+//            a1 = 255.0;
+        }
+        else if(preset_color == 1)
+        {
+            r1 = .0;
+            g1 = .0;
+            b1 = .0;
+//            a1 = .0;
+        }
+
         for (BlobColour history = BLOB_HISTORY_0;
              history <= BLOB_HISTORY_MAX;
              history = static_cast<BlobColour>(history + 1))
         {
             m_colour_map[history] = history;
             m_colour_map_rgb[history] = QColor(r1, g1, b1, a1);
-            r1 += static_cast<int>(delta_r);
-            g1 += static_cast<int>(delta_g);
-            b1 += static_cast<int>(delta_b);
+            if(preset_color == 0)
+            {
+                r1 += static_cast<int>(delta_r);
+                g1 += static_cast<int>(delta_g);
+                b1 += static_cast<int>(delta_b);
+            }
+            else if(preset_color == 1)
+            {
+                r1 -= static_cast<int>(delta_r);
+                g1 -= static_cast<int>(delta_g);
+                b1 -= static_cast<int>(delta_b);
+//                a1 -= static_cast<int>(delta_a);
+            }
             a1 += static_cast<int>(delta_a);
         }
     }

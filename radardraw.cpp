@@ -281,7 +281,7 @@ void RDVert::DrawRadarImage()
 //        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
 //        glDrawArrays(GL_TRIANGLES, 0, line->count);
         f->glVertexAttribPointer(m_posAttr, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPoint), &line->points[0].x);
-        f->glVertexAttribPointer(m_colAttr, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(VertexPoint), &line->points[0].red);
+        f->glVertexAttribPointer(m_colAttr, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexPoint), &line->points[0].red);
         f->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(line->count));
     }
 
@@ -300,11 +300,30 @@ void RDVert::DrawRadarSweep(double angle)
             0.f, 1.f,
         };
 
-        GLfloat colors[] = {
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f
+        const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+        GLfloat colors[3][3] = {
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f}
         };
+        if(preset_color == 0)
+        {
+            colors[0][0] = .0f;
+            colors[1][0] = .0f;
+            colors[2][0] = .0f;
+            colors[0][1] = 1.0f;
+            colors[1][1] = 1.0f;
+            colors[2][1] = 1.0f;
+        }
+        else if(preset_color == 1)
+        {
+            colors[0][0] = 1.0f;
+            colors[1][0] = 1.0f;
+            colors[2][0] = 1.0f;
+            colors[0][1] = 1.0f;
+            colors[1][1] = 1.0f;
+            colors[2][1] = 1.0f;
+        }
 
         vertices[2] = sin(static_cast<float>(deg2rad(angle)));
         vertices[3] = cos(static_cast<float>(deg2rad(angle)));
