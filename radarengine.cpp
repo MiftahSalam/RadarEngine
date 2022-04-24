@@ -66,6 +66,7 @@ void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
 //    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
     if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE) trigger_ReqRangeChange(val.toInt());
     else if(key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME || key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE) trigger_clearTrail();
+    else if(key == RadarConfig::NON_VOLATILE_RADAR_NET_IP_DATA) trigger_ReqRadarSetting();
 }
 
 void RadarEngine::RadarEngine::trigger_ReqTx()
