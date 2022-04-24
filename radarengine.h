@@ -29,8 +29,10 @@ class RadarEngine : public QObject
 {
     Q_OBJECT
 public:
-    RadarEngine(QObject *parent=nullptr);
-    ~RadarEngine();
+    RadarEngine(RadarEngine& other) = delete;
+    void operator=(const RadarEngine&) = delete;
+
+    static RadarEngine* getInstance(QObject* parent = nullptr);
 
     void trigger_ReqTx();
     void trigger_ReqStby();
@@ -65,6 +67,10 @@ signals:
 //    void signal_sendStby();
 //    void signal_state_change();
 
+protected:
+    RadarEngine(QObject *parent=nullptr);
+    ~RadarEngine() override;
+
 private slots:
     void onRadarConfigChange(QString key, QVariant val);
     void receiveThread_Report(quint8 report_type, quint8 report_field, quint32 value);
@@ -72,6 +78,8 @@ private slots:
     void timerTimeout();
 
 private:
+    static RadarEngine* instance;
+
     struct TrailBuffer
     {
         TrailRevolutionsAge relative_trails[LINES_PER_ROTATION][RETURNS_PER_LINE];

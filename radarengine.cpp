@@ -21,6 +21,13 @@ enum {
     TRAIL_ARRAY_SIZE
 };
 
+RadarEngine::RadarEngine* RadarEngine::RadarEngine::instance{nullptr};
+RadarEngine::RadarEngine* RadarEngine::RadarEngine::getInstance(QObject* parent)
+{
+    if(instance == nullptr) instance = new RadarEngine(parent);
+    return  instance;
+}
+
 RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     QObject(parent)
 {
