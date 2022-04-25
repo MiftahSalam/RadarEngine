@@ -15,9 +15,9 @@ class RadarArpa : public QObject
 {
     Q_OBJECT
 public:
-    explicit RadarArpa(QObject *parent = 0, RadarEngine *ri=0);
+    explicit RadarArpa(QObject *parent = nullptr, RadarEngine *ri=nullptr);
 
-    int m_number_of_targets,range_meters;
+    int m_number_of_targets/*,range_meters*/;
     ARPATarget *m_target[MAX_NUMBER_OF_TARGETS];
 
     bool MultiPix(int ang, int rad);

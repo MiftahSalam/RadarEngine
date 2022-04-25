@@ -14,9 +14,9 @@ Position Polar2Pos(Polar pol, Position own_ship, double range)
     // based on the own ship position own_ship
     Position pos;
     pos.lat = own_ship.lat +
-            (double)pol.r / (double)RETURNS_PER_LINE * range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) / 60. / 1852.;
+            static_cast<double>(pol.r) / static_cast<double>(RETURNS_PER_LINE) * range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) / 60. / 1852.;
     pos.lon = own_ship.lon +
-            (double)pol.r / (double)RETURNS_PER_LINE * range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) /
+            static_cast<double>(pol.r) / static_cast<double>(RETURNS_PER_LINE) * range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) /
             cos(deg2rad(own_ship.lat)) / 60. / 1852.;
     return pos;
 }
@@ -28,8 +28,8 @@ Polar Pos2Polar(Position p, Position own_ship, int range)
     double dif_lat = p.lat;
     dif_lat -= own_ship.lat;
     double dif_lon = (p.lon - own_ship.lon) * cos(deg2rad(own_ship.lat));
-    pol.r = (int)(sqrt(dif_lat * dif_lat + dif_lon * dif_lon) * 60. * 1852. * (double)RETURNS_PER_LINE / (double)range + 1);
-    pol.angle = (int)((atan2(dif_lon, dif_lat)) * (double)LINES_PER_ROTATION / (2. * M_PI) + 1);  // + 1 to minimize rounding errors
+    pol.r = static_cast<int>(sqrt(dif_lat * dif_lat + dif_lon * dif_lon) * 60. * 1852. * static_cast<double>(RETURNS_PER_LINE) / static_cast<double>(range) + 1);
+    pol.angle = static_cast<int>((atan2(dif_lon, dif_lat)) * static_cast<double>(LINES_PER_ROTATION) / (2. * M_PI) + 1);  // + 1 to minimize rounding errors
     if (pol.angle < 0) pol.angle += LINES_PER_ROTATION;
     return pol;
 }
@@ -38,7 +38,7 @@ ARPATarget::ARPATarget(QObject *parent, RadarEngine *re) :
     QObject(parent),m_ri(re)
 {
     qDebug()<<Q_FUNC_INFO;
-    m_kalman = 0;
+    m_kalman = nullptr;
     m_status = LOST;
     m_contour_length = 0;
     m_lost_count = 0;
@@ -61,7 +61,7 @@ ARPATarget::~ARPATarget()
     if (m_kalman)
     {
         delete m_kalman;
-        m_kalman = 0;
+        m_kalman = nullptr;
     }
 }
 bool ARPATarget::Pix(int ang, int rad)
@@ -127,8 +127,8 @@ bool ARPATarget::MultiPix(int ang, int rad)
     transl[3].angle = -1;
     transl[3].r = 0;
     int count = 0;
-    int aa;
-    int rr;
+    int aa = 0;
+    int rr = 0;
     bool succes = false;
     int index = 0;
     max_r = current;
@@ -266,28 +266,28 @@ bool ARPATarget::FindNearestContour(Polar* pol, int dist)
     for (int j = 1; j <= dist; j++)
     {
         int dist_r = j;
-        int dist_a = (int)(326. / (double)r * j);  // 326/r: conversion factor to make squares
+        int dist_a = static_cast<int>((326. / static_cast<double>(r) * j));  // 326/r: conversion factor to make squares
         //        qDebug()<<Q_FUNC_INFO<<"dist_a "<<dist_a;
         if (dist_a == 0) dist_a = 1;
         for (int i = 0; i <= dist_a; i++)
         {  // "upper" side
-            PIX(a - i, r + dist_r);            // search starting from the middle
-            PIX(a + i, r + dist_r);
+            PIX(a - i, r + dist_r)           // search starting from the middle
+            PIX(a + i, r + dist_r)
         }
         for (int i = 0; i < dist_r; i++)
         {  // "right hand" side
-            PIX(a + dist_a, r + i);
-            PIX(a + dist_a, r - i);
+            PIX(a + dist_a, r + i)
+            PIX(a + dist_a, r - i)
         }
         for (int i = 0; i <= dist_a; i++)
         {  // "lower" side
-            PIX(a + i, r - dist_r);
-            PIX(a - i, r - dist_r);
+            PIX(a + i, r - dist_r)
+            PIX(a - i, r - dist_r)
         }
         for (int i = 0; i < dist_r; i++)
         {  // "left hand" side
-            PIX(a - dist_a, r + i);
-            PIX(a - dist_a, r - i);
+            PIX(a - dist_a, r + i)
+            PIX(a - dist_a, r - i)
         }
     }
     return false;
@@ -336,18 +336,19 @@ void ARPATarget::ResetPixels()
 
 QPointF ARPATarget::blobPixelPosition()
 {
+    const double m_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
     const double currentOwnShipLon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
     const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
     double y_max = currentOwnShipLat +
-            (double)m_max_r.r / (double)RETURNS_PER_LINE * m_range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(m_max_angle.angle))) / 60. / 1852.;
+            static_cast<double>(m_max_r.r) / static_cast<double>RETURNS_PER_LINE * m_range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(m_max_angle.angle))) / 60. / 1852.;
     double x_max = currentOwnShipLon +
-            (double)m_max_r.r / (double)RETURNS_PER_LINE * m_range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(m_max_angle.angle))) /
+            static_cast<double>(m_max_r.r) / static_cast<double>RETURNS_PER_LINE * m_range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(m_max_angle.angle))) /
             cos(deg2rad(currentOwnShipLat)) / 60. / 1852.;
 
     double y_min = currentOwnShipLat +
-            (double)m_min_r.r / (double)RETURNS_PER_LINE * m_range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(m_min_angle.angle))) / 60. / 1852.;
+            static_cast<double>(m_min_r.r) / static_cast<double>RETURNS_PER_LINE * m_range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(m_min_angle.angle))) / 60. / 1852.;
     double x_min = currentOwnShipLon +
-            (double)m_min_r.r / (double)RETURNS_PER_LINE * m_range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(m_min_angle.angle))) /
+            static_cast<double>(m_min_r.r) / static_cast<double>RETURNS_PER_LINE * m_range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(m_min_angle.angle))) /
             cos(deg2rad(currentOwnShipLat)) / 60. / 1852.;
     double x_avg = (x_min+x_max)/2;
     double y_avg = (y_max+y_min)/2;
@@ -358,6 +359,7 @@ QPointF ARPATarget::blobPixelPosition()
 
 void ARPATarget::RefreshTarget(int dist)
 {
+    const double m_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
     Position prev_X;
     Position prev2_X;
     Position own_pos;
@@ -376,7 +378,7 @@ void ARPATarget::RefreshTarget(int dist)
     own_pos.lat = currentOwnShipLat;
     own_pos.lon = currentOwnShipLon;
 
-    pol = Pos2Polar(m_position, own_pos, m_range);
+    pol = Pos2Polar(m_position, own_pos, static_cast<int>(m_range));
     //    qDebug()<<"old pol "<<pol.angle<<pol.r;
     //    qDebug()<<"old pos "<<currentOwnShipLat<<currentOwnShipLon<<m_position.lat<<m_position.lon<<m_range;
 
@@ -390,8 +392,8 @@ void ARPATarget::RefreshTarget(int dist)
     quint64 time2 = m_ri->m_history[MOD_ROTATION2048(pol.angle + margin)].time;
     if ((time1 < (m_refresh + SCAN_MARGIN2) || time2 < time1) && m_status != 0)
     {
-        quint64 now = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();  // millis
-        int diff = now - m_refresh;
+        quint64 now = static_cast<quint64>(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch());  // millis
+        quint64 diff = now - m_refresh;
         if (diff > 28000)
 //            if (diff > 40000)
         {
@@ -416,33 +418,33 @@ void ARPATarget::RefreshTarget(int dist)
                 }
                 else
                 {
-                    double dt = (now - m_time_future)/1000;
+                    double dt = static_cast<double>(now - m_time_future)/1000.;
                     if(dt > 1)
                     {
                         m_time_future = now;
                         int buf_deg = MOD_ROTATION2048(m_max_angle_future.angle);
-                        buf_deg = SCALE_RAW_TO_DEGREES2048(buf_deg);
-                        int max_r_xA = m_max_r_future.r*qSin(deg2rad(buf_deg));
-                        int max_r_yA = m_max_r_future.r*qCos(deg2rad(buf_deg));
+                        buf_deg = static_cast<int>SCALE_RAW_TO_DEGREES2048(buf_deg);
+                        int max_r_xA = m_max_r_future.r*static_cast<int>(qSin(deg2rad(buf_deg)));
+                        int max_r_yA = m_max_r_future.r*static_cast<int>(qCos(deg2rad(buf_deg)));
                         double dx = 8*(m_position.dlon_dt*dt*RETURNS_PER_LINE)/m_range;
                         double dy = 9*(m_position.dlat_dt*dt*RETURNS_PER_LINE)/m_range;
-                        int max_r_xB = max_r_xA+(int)dx;
-                        int max_r_yB = max_r_yA+(int)dy;
+                        int max_r_xB = max_r_xA+static_cast<int>(dx);
+                        int max_r_yB = max_r_yA+static_cast<int>(dy);
 
                         buf_deg = MOD_ROTATION2048(m_min_angle_future.angle);
-                        buf_deg = SCALE_RAW_TO_DEGREES2048(buf_deg);
-                        int min_r_xA = m_min_r_future.r*qSin(deg2rad(buf_deg));
-                        int min_r_yA = m_min_r_future.r*qCos(deg2rad(buf_deg));
-                        int min_r_xB = min_r_xA+(int)dx;
-                        int min_r_yB = min_r_yA+(int)dy;
+                        buf_deg = static_cast<int>SCALE_RAW_TO_DEGREES2048(buf_deg);
+                        int min_r_xA = m_min_r_future.r*static_cast<int>(qSin(deg2rad(buf_deg)));
+                        int min_r_yA = m_min_r_future.r*static_cast<int>(qCos(deg2rad(buf_deg)));
+                        int min_r_xB = min_r_xA+static_cast<int>(dx);
+                        int min_r_yB = min_r_yA+static_cast<int>(dy);
 
-                        m_max_r_future.r = sqrt(pow(max_r_xB,2)+pow(max_r_yB,2));
-                        m_max_angle_future.angle = rad2deg(atan2(max_r_xB,max_r_yB));
+                        m_max_r_future.r = static_cast<int>(sqrt(pow(max_r_xB,2)+pow(max_r_yB,2)));
+                        m_max_angle_future.angle = static_cast<int>rad2deg(atan2(max_r_xB,max_r_yB));
                         m_max_angle_future.angle = SCALE_DEGREES_TO_RAW2048(m_max_angle_future.angle);
                         m_max_angle_future.angle = MOD_ROTATION2048(m_max_angle_future.angle);
 
-                        m_min_r_future.r = sqrt(pow(min_r_xB,2)+pow(min_r_yB,2));
-                        m_min_angle_future.angle = rad2deg(atan2(min_r_xB,min_r_yB));
+                        m_min_r_future.r = static_cast<int>(sqrt(pow(min_r_xB,2)+pow(min_r_yB,2)));
+                        m_min_angle_future.angle = static_cast<int>rad2deg(atan2(min_r_xB,min_r_yB));
                         m_min_angle_future.angle = SCALE_DEGREES_TO_RAW2048(m_min_angle_future.angle);
                         m_min_angle_future.angle = MOD_ROTATION2048(m_min_angle_future.angle);
 
@@ -483,7 +485,7 @@ void ARPATarget::RefreshTarget(int dist)
 
     // PREDICTION CYCLE
     m_position.time = time1;                                                // estimated new target time
-    delta_t = ((double)((m_position.time - prev_X.time))) / 1000.;  // in seconds
+    delta_t = (static_cast<double>((m_position.time - prev_X.time))) / 1000.;  // in seconds
     //    qDebug()<<Q_FUNC_INFO<<"m_pos time"<<m_position.time<<"prev time"<<prev_X.time;
     if (m_status == 0)
         delta_t = 0.;
@@ -501,9 +503,9 @@ void ARPATarget::RefreshTarget(int dist)
     //    qDebug()<<Q_FUNC_INFO<<"111..x_local.lat"<<x_local.lat<<"x_local.lon"<<x_local.lon;
     m_kalman->Predict(&x_local, delta_t);  // x_local is new estimated local position of the target
     // now set the polar to expected angular position from the expected local position
-    pol.angle = (int)(atan2(x_local.lon, x_local.lat) * LINES_PER_ROTATION / (2. * M_PI));
+    pol.angle = static_cast<int>(atan2(x_local.lon, x_local.lat) * LINES_PER_ROTATION / (2. * M_PI));
     if (pol.angle < 0) pol.angle += LINES_PER_ROTATION;
-    pol.r =(int)(sqrt(x_local.lat * x_local.lat + x_local.lon * x_local.lon) * (double)RETURNS_PER_LINE / (double)m_range);
+    pol.r =static_cast<int>(sqrt(x_local.lat * x_local.lat + x_local.lon * x_local.lon) * static_cast<double>RETURNS_PER_LINE / m_range);
     // zooming and target movement may  cause r to be out of bounds
     if (pol.r >= RETURNS_PER_LINE || pol.r <= 0)
     {
@@ -570,7 +572,7 @@ void ARPATarget::RefreshTarget(int dist)
         if (m_status > 1)
         {
             m_kalman->Update_P();
-            m_kalman->SetMeasurement(&pol, &x_local, &m_expected, m_range);  // pol is measured position in polar coordinates
+            m_kalman->SetMeasurement(&pol, &x_local, &m_expected, static_cast<int>(m_range));  // pol is measured position in polar coordinates
         }
 
         // x_local expected position in local coordinates
@@ -686,10 +688,10 @@ void ARPATarget::RefreshTarget(int dist)
         m_course = rad2deg(atan2(s2, s1));
         if (m_course < 0) m_course += 360.;
         if (m_speed_kn > 20.)
-            pol = Pos2Polar(m_position, own_pos, m_range);
+            pol = Pos2Polar(m_position, own_pos, static_cast<int>(m_range));
 
 
-        if (m_speed_kn < (double)TARGET_SPEED_DIV_SDEV * m_position.sd_speed_kn)
+        if (m_speed_kn < static_cast<double>(TARGET_SPEED_DIV_SDEV) * m_position.sd_speed_kn)
         {
             m_speed_kn = 0.;
             m_course = 0.;
@@ -727,8 +729,8 @@ int ARPATarget::GetContour(Polar* pol)
     int count = 0;
     Polar start = *pol;
     Polar current = *pol;
-    int aa;
-    int rr;
+    int aa = 0;
+    int rr = 0;
 
     bool succes = false;
     int index = 0;
