@@ -51,6 +51,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     radarTransmit = new RadarTransmit(this,this);
     radarDraw = RadarDraw::make_Draw(this,0);
     radarArpa = new RadarArpa(this,this);
+    guardZone = new GuardZone(this,this);
 
     RadarConfig::RadarConfig *instance = RadarConfig::RadarConfig::getInstance("");
 
@@ -91,7 +92,7 @@ RadarEngine::RadarEngine::~RadarEngine()
 
 void RadarEngine::RadarEngine::timerTimeout()
 {
-    quint64 now = QDateTime::currentMSecsSinceEpoch();
+    quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
 
     const RadarState state_radar = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
     const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
@@ -116,6 +117,10 @@ void RadarEngine::RadarEngine::timerTimeout()
     if(cur_radar_state != state_radar)
     {
         cur_radar_state = state_radar;
+        if(state_radar == RADAR_STANDBY)
+        {
+            ResetSpokes();
+        }
 //        emit signal_state_change();
     }
 
@@ -250,7 +255,8 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
         }
     }
 
-    emit signal_plotRadarSpoke(bearing,raw_data,dataSize);
+    guardZone->ProcessSpoke(bearing,raw_data);
+    emit signal_plotRadarSpoke(bearing,raw_data,static_cast<size_t>(dataSize));
 }
 
 void RadarEngine::RadarEngine::ResetSpokes()
@@ -448,6 +454,8 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
     ResetSpokes();
     radarReceive->exitReq();
     sleep(1);
+    radarTransmit->setMulticastData(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
+                                    RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_CMD).toUInt());
     radarReceive->start();
 
 }
@@ -455,6 +463,7 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
     const uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
+    const uint cur_scale = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
     if ((cur_range != static_cast<uint>(new_range)))
     {
         RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range);
@@ -463,11 +472,17 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
         ResetSpokes();
         qDebug()<<Q_FUNC_INFO<<"detected spoke range change from "<<cur_range<<" to "<<new_range;
     }
+    if ((cur_scale != static_cast<uint>(new_range)))
+    {
+        trigger_ReqRangeChange(static_cast<int>(cur_scale));
+        ResetSpokes();
+        qDebug()<<Q_FUNC_INFO<<"range mismatch "<<cur_scale<<" to "<<new_range;
+    }
 }
 
 void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 report_field, quint32 value)
 {
-    quint64 now = QDateTime::currentMSecsSinceEpoch();
+    quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
     radar_timeout = now + WATCHDOG_TIMEOUT;
 //    RadarState *cur_radar_state = &state_radar;
     RadarState cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
@@ -476,14 +491,18 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
     {
     case RADAR_STATE:
 //        if(radarId == 0)
-        cur_radar_state = (RadarState)report_field;
+        cur_radar_state = static_cast<RadarState>(report_field);
         if(cur_radar_state == RADAR_TRANSMIT && TIMED_OUT(now,data_timeout))
         {
             cur_radar_state = RADAR_NO_SPOKE;
             ResetSpokes();
         }
+        if(cur_radar_state == RADAR_WAKING_UP)
+        {
+            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_WAKINGUP_TIME,static_cast<quint8>(value));
+        }
 
-       RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_WAKINGUP_TIME,static_cast<quint8>(value));
+        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,static_cast<quint8>(cur_radar_state));
 
         qDebug()<<Q_FUNC_INFO<<"report status radar"<<(RadarState)report_field;
         break;
