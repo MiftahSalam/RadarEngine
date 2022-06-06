@@ -121,6 +121,10 @@ void RadarEngine::RadarEngine::timerTimeout()
         {
             ResetSpokes();
         }
+        else if(state_radar != RADAR_TRANSMIT)
+        {
+            radarArpa->DeleteAllTargets();
+        }
 //        emit signal_state_change();
     }
 
