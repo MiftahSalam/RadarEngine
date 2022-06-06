@@ -81,6 +81,10 @@ public:
     double m_course;
     int m_stationary;
     Position m_position;   // holds actual position of target
+
+signals:
+    void signal_LostTarget(int id);
+
 private:
     bool GetTarget(Polar* pol, int dist1);
     void ResetPixels();

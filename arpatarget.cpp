@@ -220,6 +220,8 @@ bool ARPATarget::MultiPix(int ang, int rad)
 void ARPATarget::SetStatusLost()
 {
     qDebug()<<Q_FUNC_INFO<<"id"<<m_target_id;
+
+    int cur_target_id = m_target_id;
     m_contour_length = 0;
     m_lost_count = 0;
     if (m_kalman)         // reset kalman filter, don't delete it, too  expensive
@@ -244,6 +246,8 @@ void ARPATarget::SetStatusLost()
     m_position.dlon_dt = 0.;
     m_speeds.nr = 0;
     m_pass_nr = PASS1;
+
+    emit signal_LostTarget(cur_target_id);
 }
 #define PIX(aa, rr)       \
     if (rr > 510) continue; \

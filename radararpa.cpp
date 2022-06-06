@@ -263,6 +263,8 @@ void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
         if (m_target[m_number_of_targets] == nullptr)
         {
             m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
+            connect(m_target[m_number_of_targets],&ARPATarget::signal_LostTarget,
+                    this,&RadarArpa::signal_LostTarget);
             //            qDebug()<<Q_FUNC_INFO<<"create new ARPAtarget";
         }
         i_target = m_number_of_targets;
@@ -321,7 +323,11 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     if (m_number_of_targets < MAX_NUMBER_OF_TARGETS - 1 || (m_number_of_targets == MAX_NUMBER_OF_TARGETS - 1 && status == -2))
     {
         if (!m_target[m_number_of_targets])
+        {
             m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
+            connect(m_target[m_number_of_targets],&ARPATarget::signal_LostTarget,
+                    this,&RadarArpa::signal_LostTarget);
+        }
 
         i = m_number_of_targets;
         m_number_of_targets++;

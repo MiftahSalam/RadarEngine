@@ -31,6 +31,9 @@ public:
         DeleteAllTargets();
     }
 
+signals:
+    void signal_LostTarget(int id);
+
 private:
     bool Pix(int ang, int rad);
     void AcquireOrDeleteMarpaTarget(Position target_pos, int status);
