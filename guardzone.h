@@ -30,7 +30,7 @@ public:
 signals:
 //    void signal_autoTrack(int angle, int range);
 
-private slots:
+public slots:
 //    void trigger_autoTrack(int angle, int range);
     void trigger_configChange(const QString key, const QVariant val);
 
