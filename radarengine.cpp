@@ -64,6 +64,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 //    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
     connect(this,SIGNAL(signal_stay_alive()),radarTransmit,SLOT(RadarStayAlive()));
     connect(instance,&RadarConfig::RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
+    connect(instance,&RadarConfig::RadarConfig::configValueChange,guardZone,&GuardZone::trigger_configChange);
 
     trigger_ReqRadarSetting();
     timer->start(1000);
