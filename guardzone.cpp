@@ -131,7 +131,8 @@ void GuardZone::trigger_configChange(const QString key, const QVariant val)
     }
     else if(key == RadarConfig::NON_VOLATILE_GZ_START_BEARING)
     {
-        m_start_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble());
+        const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+        m_start_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble()+hdt);
         ResetBogeys();
     }
     else if(key == RadarConfig::NON_VOLATILE_GZ_END_RANGE)
@@ -142,7 +143,8 @@ void GuardZone::trigger_configChange(const QString key, const QVariant val)
     }
     else if(key == RadarConfig::NON_VOLATILE_GZ_END_BEARING)
     {
-        m_end_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble());
+        const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+        m_end_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble()+hdt);
         ResetBogeys();
     }
     else if(key == RadarConfig::NON_VOLATILE_GZ_MODE)
