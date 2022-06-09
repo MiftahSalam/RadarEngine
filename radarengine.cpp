@@ -125,6 +125,7 @@ void RadarEngine::RadarEngine::timerTimeout()
         else if(state_radar != RADAR_TRANSMIT)
         {
             radarArpa->DeleteAllTargets();
+            guardZone->ResetBogeys();
         }
 //        emit signal_state_change();
     }
