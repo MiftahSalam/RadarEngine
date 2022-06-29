@@ -56,7 +56,7 @@ public:
 
     RadarDraw *radarDraw;
     RadarArpa *radarArpa;
-    GuardZone *guardZone;
+    QMap<QString,GuardZone *> guardZones;
 
 signals:
     void signal_updateReport();

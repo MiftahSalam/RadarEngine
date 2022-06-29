@@ -21,6 +21,13 @@ public:
 
     virtual ~GuardZone() override {}
 
+    void setInnerRange(const int range);
+    void setOutterRange(const int range);
+    void setStartBearing(const double deg);
+    void setEndBearing(const double deg);
+    void setType(const GZType type);
+    void setShown(const bool show);
+
     void ResetBogeys();
     void ProcessSpoke(int angle, UINT8 *data);
 //    void autoTrack();
@@ -32,7 +39,7 @@ signals:
 
 public slots:
 //    void trigger_autoTrack(int angle, int range);
-    void trigger_configChange(const QString key, const QVariant val);
+//    void trigger_configChange(const QString key, const QVariant val);
 
 
 private:
