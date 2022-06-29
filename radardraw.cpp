@@ -308,18 +308,18 @@ void RDVert::DrawRadarSweep(double angle)
         };
         if(preset_color == 0)
         {
-            colors[0][0] = .0f;
-            colors[1][0] = .0f;
-            colors[2][0] = .0f;
+            colors[0][0] = 1.0f;
+            colors[1][0] = 1.0f;
+            colors[2][0] = 1.0f;
             colors[0][1] = 1.0f;
             colors[1][1] = 1.0f;
             colors[2][1] = 1.0f;
         }
         else if(preset_color == 1)
         {
-            colors[0][0] = 1.0f;
-            colors[1][0] = 1.0f;
-            colors[2][0] = 1.0f;
+            colors[0][0] = .0f;
+            colors[1][0] = .0f;
+            colors[2][0] = .0f;
             colors[0][1] = 1.0f;
             colors[1][1] = 1.0f;
             colors[2][1] = 1.0f;
