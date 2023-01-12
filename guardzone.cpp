@@ -38,6 +38,11 @@ void GuardZone::ProcessSpoke(int angle, UINT8* data/*, UINT8* hist, int range*/)
     int range_start = m_inner_range;  // Convert from meters to 0..511
     int range_end = m_outer_range;    // Convert from meters to 0..511
     bool in_guard_zone = false;
+    const bool is_heading_up =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
+    const double hdt = is_heading_up ? RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble() : 0.;
+
+    m_start_bearing = SCALE_DEGREES_TO_RAW2048(m_start_bearing_deg-hdt);
+    m_end_bearing = SCALE_DEGREES_TO_RAW2048(m_end_bearing_deg-hdt);
 
     switch (m_type)
     {
@@ -176,6 +181,7 @@ void GuardZone::setStartBearing(const double deg)
 {
 //    const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
+    m_start_bearing_deg = deg;
     m_start_bearing = SCALE_DEGREES_TO_RAW2048(deg+hdt);
     ResetBogeys();
 }
@@ -184,6 +190,7 @@ void GuardZone::setEndBearing(const double deg)
 {
 //    const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
+    m_end_bearing_deg = deg;
     m_end_bearing = SCALE_DEGREES_TO_RAW2048(deg+hdt);
     ResetBogeys();
 }

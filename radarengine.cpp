@@ -116,6 +116,7 @@ void RadarEngine::RadarEngine::trigger_ReqTx()
 void RadarEngine::RadarEngine::trigger_ReqStby()
 {
     radarTransmit->RadarStby();
+    RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,RADAR_STANDBY);
 }
 RadarEngine::RadarEngine::~RadarEngine()
 {
@@ -484,7 +485,7 @@ void RadarEngine::RadarEngine::trigger_stopRadar()
 
 void RadarEngine::RadarEngine::trigger_ReqRangeChange(int range)
 {
-    radarTransmit->setRange(range);
+    radarTransmit->setRange(range/2);
 }
 
 void RadarEngine::RadarEngine::trigger_clearTrail()
@@ -509,13 +510,13 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
     const uint cur_scale = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
     if ((cur_range != static_cast<uint>(new_range)))
     {
-        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range);
+        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range*2/10);
 //        m_range_meters = new_range;
 //        emit signal_range_change(new_range/10);
         ResetSpokes();
         qDebug()<<Q_FUNC_INFO<<"detected spoke range change from "<<cur_range<<" to "<<new_range;
     }
-    if ((cur_scale != static_cast<uint>(new_range)))
+    if ((cur_scale != static_cast<uint>(new_range*2/10)))
     {
         trigger_ReqRangeChange(static_cast<int>(cur_scale));
         ResetSpokes();
@@ -528,7 +529,8 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
     quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
     radar_timeout = now + WATCHDOG_TIMEOUT;
 //    RadarState *cur_radar_state = &state_radar;
-    RadarState cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
+    RadarState prev_cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
+    RadarState cur_radar_state;
 //    qDebug()<<Q_FUNC_INFO;
     switch (report_type)
     {
@@ -545,9 +547,11 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
             RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_WAKINGUP_TIME,static_cast<quint8>(value));
         }
 
-        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,static_cast<quint8>(cur_radar_state));
+        if(prev_cur_radar_state != RADAR_TRANSMIT)
+            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,static_cast<quint8>(cur_radar_state));
 
-        qDebug()<<Q_FUNC_INFO<<"report status radar"<<static_cast<RadarState>(report_field);
+        qDebug()<<Q_FUNC_INFO<<"report status radar now"<<static_cast<RadarState>(report_field);
+        qDebug()<<Q_FUNC_INFO<<"report status radar prev"<<prev_cur_radar_state;
         break;
     case RADAR_FILTER:
         switch (report_field)
