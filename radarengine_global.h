@@ -10,6 +10,8 @@
 
 #include <math.h>
 
+#include <radarconfig_global.h>
+
 namespace RadarEngine {
 
 enum BlobColour {
@@ -135,6 +137,16 @@ static const QList<int> distanceList = QList<int>()<<40000 //0
                                            <<1500 //6
                                           <<1000 //7
                                          <<500 //8
+                                           ;
+static const QList<int> distanceListNautical = QList<int>()<<25000/KM_TO_NM //0
+                                                <<20000/KM_TO_NM //1
+                                               <<15000/KM_TO_NM //2
+                                              <<10000/KM_TO_NM //3
+                                             <<5000/KM_TO_NM //4
+                                            <<2000/KM_TO_NM //5
+                                           <<1500/KM_TO_NM //6
+                                          <<1000/KM_TO_NM //7
+                                         <<500/KM_TO_NM //8
                                            ;
 
 }
