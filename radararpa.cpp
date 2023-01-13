@@ -313,15 +313,15 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     Position own_pos;
     Position target_pos;
     double range_meters = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
-    switch (unit) {
-    case 1:
-        range_meters *= KM_TO_NM;
-        break;
-    default:
-        break;
-    }
+//    switch (unit) {
+//    case 1:
+//        range_meters *= KM_TO_NM;
+//        break;
+//    default:
+//        break;
+//    }
 
     own_pos.lat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
     own_pos.lon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();

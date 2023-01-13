@@ -266,15 +266,15 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
     if(is_trail_enable)
     {
         uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
-        const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+//        const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
-        switch (unit) {
-        case 1:
-            cur_range *= KM_TO_NM;
-            break;
-        default:
-            break;
-        }
+//        switch (unit) {
+//        case 1:
+//            cur_range *= KM_TO_NM;
+//            break;
+//        default:
+//            break;
+//        }
 
         if (m_old_range != cur_range && m_old_range != 0 && cur_range != 0)
         {
@@ -516,17 +516,17 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
 
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
-    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
     uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
     const uint cur_scale = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
-    switch (unit) {
-    case 1:
-        cur_range /= KM_TO_NM;
-        break;
-    default:
-        break;
-    }
+//    switch (unit) {
+//    case 1:
+//        cur_range /= KM_TO_NM;
+//        break;
+//    default:
+//        break;
+//    }
     if ((cur_range != static_cast<uint>(new_range)))
     {
         RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range*2/10);

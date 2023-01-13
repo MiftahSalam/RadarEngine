@@ -341,15 +341,15 @@ void ARPATarget::ResetPixels()
 QPointF ARPATarget::blobPixelPosition()
 {
     double m_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
-    switch (unit) {
-    case 1:
-        m_range *= KM_TO_NM;
-        break;
-    default:
-        break;
-    }
+//    switch (unit) {
+//    case 1:
+//        m_range *= KM_TO_NM;
+//        break;
+//    default:
+//        break;
+//    }
 
     const double currentOwnShipLon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
     const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
