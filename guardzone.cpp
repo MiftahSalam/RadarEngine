@@ -165,14 +165,34 @@ void GuardZone::trigger_configChange(const QString key, const QVariant val)
 */
 void GuardZone::setInnerRange(const int range)
 {
-    const int curRange =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toInt();
+    double curRange = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+
+//    switch (unit) {
+//    case 1:
+//        curRange *= KM_TO_NM;
+//        break;
+//    default:
+//        break;
+//    }
+
     m_inner_range = range*RETURNS_PER_LINE/curRange;
     ResetBogeys();
 }
 
 void GuardZone::setOutterRange(const int range)
 {
-    const int curRange =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toInt();
+    double curRange = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+
+//    switch (unit) {
+//    case 1:
+//        curRange *= KM_TO_NM;
+//        break;
+//    default:
+//        break;
+//    }
+
     m_outer_range = range*RETURNS_PER_LINE/curRange;
     ResetBogeys();
 }
