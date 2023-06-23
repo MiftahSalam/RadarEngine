@@ -54,6 +54,8 @@ private:
     GZType m_type;
     int m_start_bearing;
     int m_end_bearing;
+    double m_start_bearing_deg;
+    double m_end_bearing_deg;
     int m_inner_range;  // start in meters
     int m_outer_range;  // end   in meters
     float m_range_start;
