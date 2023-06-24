@@ -13,20 +13,12 @@ OBJECTS_DIR = obj
 
 unix: {
     target.path = /usr/lib/RadarEngine
-    header_base.files = $$HEADERS_BASE
-    header_base.path = /usr/include/RadarEngine
-    INSTALLS += target
-    INSTALLS += header_base
-	
-    INCLUDEPATH += /usr/include/RadarConfig/
-    DEPENDPATH += /usr/include/RadarConfig/
-	
-    LIBS += -L/usr/lib/RadarConfig/ -lRadarConfig
+    header.files = $$HEADERS_BASE \
+                        $$HEADERS_SHARED \
+                        $$HEADERS_ARPA \
+                        $$HEADERS_STREAM
 
-} else:win32 {
-    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\ -lRadarConfig
-    LIBS += -lOpenGL32
-	
-    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include
-    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include
+    header.path = /usr/include/RadarEngine
+    INSTALLS += target
+    INSTALLS += header
 }

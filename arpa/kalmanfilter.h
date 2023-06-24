@@ -3,6 +3,10 @@
 
 #include <QObject>
 
+#include "shared/utils.h"
+
+using namespace RadarEngine;
+
 template <typename Ty, int N, int M = N>
 
 struct Matrix {
@@ -165,14 +169,6 @@ public:
   double sd_speed_m_s;  // standard deviation of the speed m / sec
 
 };
-
-class Polar {
- public:
-  int angle;
-  int r;
-  quint64 time;  // wxGetUTCTimeMillis
-};
-
 
 class KalmanFilter : public QObject
 {

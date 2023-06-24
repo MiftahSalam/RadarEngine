@@ -77,7 +77,7 @@ void RadarArpa::RefreshArpaTargets()
     // main target refresh loop
 
     // pass 1 of target refresh
-    int dist = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt();
+    int dist = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt();
     for (int i = 0; i < m_number_of_targets; i++)
     {
         if (!m_target[i])
@@ -96,7 +96,7 @@ void RadarArpa::RefreshArpaTargets()
     }
 
     // pass 2 of target refresh
-    dist = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2).toInt();
+    dist = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2).toInt();
     for (int i = 0; i < m_number_of_targets; i++)
     {
         if (!m_target[i])
@@ -134,7 +134,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
     // false if not
     // if false clears out pixels of th blob in hist
     //    wxCriticalSectionLocker lock(ArpaTarget::m_ri->m_exclusive);
-    int length = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN).toInt();
+    int length = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN).toInt();
 
     Polar start;
     start.angle = ang;
@@ -312,8 +312,8 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     // constructs Kalman filter
     Position own_pos;
     Position target_pos;
-    double range_meters = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    double range_meters = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
 //    case 1:
@@ -323,8 +323,8 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
 //        break;
 //    }
 
-    own_pos.lat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
-    own_pos.lon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
+    own_pos.lat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
+    own_pos.lon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
     target_pos = Polar2Pos(pol, own_pos, range_meters);
     // make new target or re-use an existing one with status == lost
     qDebug()<<Q_FUNC_INFO<<"range_meters"<<range_meters;
@@ -371,7 +371,7 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     target->m_check_for_duplicate = false;
     target->m_automatic = true;
     target->m_target_id = 0;
-    target->RefreshTarget(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt());
+    target->RefreshTarget(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt());
     return i;
 }
 

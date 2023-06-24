@@ -1,5 +1,5 @@
 #include "radarengine.h"
-#include <radarconfig_global.h>
+#include "shared/constants.h"
 
 #include <QtOpenGL/qgl.h>
 #include <unistd.h>
@@ -36,10 +36,10 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     radar_timeout = 0;
 //    m_range_meters = 0;
 
-    cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
-    old_draw_trails = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
-    old_trail = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
-    old_preset = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+    cur_radar_state = static_cast<RadarState>(RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_STATUS).toInt());
+    old_draw_trails = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    old_trail = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
+    old_preset = RadarConfig::getInstance("")->getConfig(VOLATILE_DISPLAY_PRESET_COLOR).toInt();
 
     ComputeColourMap();
     ComputeTargetTrails();
@@ -52,25 +52,25 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     radarDraw = RadarDraw::make_Draw(this,0);
     radarArpa = new RadarArpa(this,this);
 
-    RadarConfig::RadarConfig *instance = RadarConfig::RadarConfig::getInstance("");
+    RadarConfig *instance = RadarConfig::getInstance("");
 
     GuardZone *guardZone = new GuardZone(this,this);
-    guardZone->setType(static_cast<GZType>(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_MODE).toInt()));
-    guardZone->setShown(instance->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool());
-    guardZone->setInnerRange(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_START_RANGE).toInt());
-    guardZone->setOutterRange(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_END_RANGE).toInt());
-    guardZone->setStartBearing(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_START_BEARING).toDouble());
-    guardZone->setEndBearing(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_END_BEARING).toDouble());
+    guardZone->setType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE).toInt()));
+    guardZone->setShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool());
+    guardZone->setInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE).toInt());
+    guardZone->setOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE).toInt());
+    guardZone->setStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING).toDouble());
+    guardZone->setEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING).toDouble());
 
     guardZones.insert("GZ 1",guardZone);
 
     guardZone = new GuardZone(this,this);
-    guardZone->setType(static_cast<GZType>(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_MODE1).toInt()));
-    guardZone->setShown(instance->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1).toBool());
-    guardZone->setInnerRange(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_START_RANGE1).toInt());
-    guardZone->setOutterRange(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_END_RANGE1).toInt());
-    guardZone->setStartBearing(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_START_BEARING1).toDouble());
-    guardZone->setEndBearing(instance->getConfig(RadarConfig::NON_VOLATILE_GZ_END_BEARING1).toDouble());
+    guardZone->setType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE1).toInt()));
+    guardZone->setShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1).toBool());
+    guardZone->setInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE1).toInt());
+    guardZone->setOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE1).toInt());
+    guardZone->setStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING1).toDouble());
+    guardZone->setEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING1).toDouble());
 
     guardZones.insert("GZ 2",guardZone);
 
@@ -82,8 +82,8 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 //    connect(this,SIGNAL(signal_sendStby()),radarTransmit,SLOT(RadarStby()));
 //    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
     connect(this,SIGNAL(signal_stay_alive()),radarTransmit,SLOT(RadarStayAlive()));
-    connect(instance,&RadarConfig::RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
-//    connect(instance,&RadarConfig::RadarConfig::configValueChange,guardZone,&GuardZone::trigger_configChange);
+    connect(instance,&RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
+//    connect(instance,&RadarConfig::configValueChange,guardZone,&GuardZone::trigger_configChange);
 
     trigger_ReqRadarSetting();
     timer->start(1000);
@@ -92,21 +92,21 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
 {
 //    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
-    if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE) trigger_ReqRangeChange(val.toInt());
-    else if(key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME || key == RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE) trigger_clearTrail();
-    else if(key == RadarConfig::NON_VOLATILE_RADAR_NET_IP_DATA) trigger_ReqRadarSetting();
-    else if(key == RadarConfig::NON_VOLATILE_GZ_START_RANGE) guardZones["GZ 1"]->setInnerRange(val.toInt());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_START_RANGE1) guardZones["GZ 2"]->setInnerRange(val.toInt());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_START_BEARING) guardZones["GZ 1"]->setStartBearing(val.toDouble());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_START_BEARING1) guardZones["GZ 2"]->setStartBearing(val.toDouble());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_RANGE) guardZones["GZ 1"]->setOutterRange(val.toInt());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_RANGE1) guardZones["GZ 2"]->setOutterRange(val.toInt());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_BEARING) guardZones["GZ 1"]->setEndBearing(val.toDouble());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_BEARING1) guardZones["GZ 2"]->setEndBearing(val.toDouble());
-    else if(key == RadarConfig::NON_VOLATILE_GZ_MODE) guardZones["GZ 1"]->setType(static_cast<GZType>(val.toInt()));
-    else if(key == RadarConfig::NON_VOLATILE_GZ_MODE1) guardZones["GZ 2"]->setType(static_cast<GZType>(val.toInt()));
-    else if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ) guardZones["GZ 1"]->setShown(val.toBool());
-    else if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1) guardZones["GZ 2"]->setShown(val.toBool());
+    if(key == NON_VOLATILE_PPI_DISPLAY_LAST_SCALE) trigger_ReqRangeChange(val.toInt());
+    else if(key == NON_VOLATILE_RADAR_TRAIL_TIME || key == NON_VOLATILE_RADAR_TRAIL_ENABLE) trigger_clearTrail();
+    else if(key == NON_VOLATILE_RADAR_NET_IP_DATA) trigger_ReqRadarSetting();
+    else if(key == NON_VOLATILE_GZ_START_RANGE) guardZones["GZ 1"]->setInnerRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_START_RANGE1) guardZones["GZ 2"]->setInnerRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_START_BEARING) guardZones["GZ 1"]->setStartBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_START_BEARING1) guardZones["GZ 2"]->setStartBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_END_RANGE) guardZones["GZ 1"]->setOutterRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_END_RANGE1) guardZones["GZ 2"]->setOutterRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_END_BEARING) guardZones["GZ 1"]->setEndBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_END_BEARING1) guardZones["GZ 2"]->setEndBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_MODE) guardZones["GZ 1"]->setType(static_cast<GZType>(val.toInt()));
+    else if(key == NON_VOLATILE_GZ_MODE1) guardZones["GZ 2"]->setType(static_cast<GZType>(val.toInt()));
+    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ) guardZones["GZ 1"]->setShown(val.toBool());
+    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1) guardZones["GZ 2"]->setShown(val.toBool());
 }
 
 void RadarEngine::RadarEngine::trigger_ReqTx()
@@ -116,7 +116,7 @@ void RadarEngine::RadarEngine::trigger_ReqTx()
 void RadarEngine::RadarEngine::trigger_ReqStby()
 {
     radarTransmit->RadarStby();
-    RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,RADAR_STANDBY);
+    RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,RADAR_STANDBY);
 }
 RadarEngine::RadarEngine::~RadarEngine()
 {
@@ -127,9 +127,9 @@ void RadarEngine::RadarEngine::timerTimeout()
 {
     quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
 
-    const RadarState state_radar = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
-    const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
-    const int trail = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
+    const RadarState state_radar = static_cast<RadarState>(RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_STATUS).toInt());
+    const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    const int trail = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
 
 //    qDebug()<<Q_FUNC_INFO<<"state_radar"<<(int)state_radar;
 
@@ -140,7 +140,7 @@ void RadarEngine::RadarEngine::timerTimeout()
     }
     if(((state_radar == RADAR_STANDBY) | (state_radar == RADAR_TRANSMIT)) && TIMED_OUT(now,radar_timeout))
     {
-        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,RADAR_OFF);
+        RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,RADAR_OFF);
         ResetSpokes();
     }
 
@@ -165,7 +165,7 @@ void RadarEngine::RadarEngine::timerTimeout()
 //        emit signal_state_change();
     }
 
-    const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+    const int preset_color = RadarConfig::getInstance("")->getConfig(VOLATILE_DISPLAY_PRESET_COLOR).toInt();
     if(old_preset != preset_color)
     {
         ClearTrails();
@@ -207,15 +207,15 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
 //    state_radar = RADAR_TRANSMIT; //need for offline mode
 
 
-    RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,RADAR_TRANSMIT);
+    RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,RADAR_TRANSMIT);
 
-    const bool heading_up = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
-    const bool mti_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_CONTROL_MTI).toBool();
-    const int mti = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_MTI).toInt();
-    const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
-    const double currentHeading = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
-    const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
-    const double currentOwnShipLon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
+    const bool heading_up = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
+    const bool mti_enable = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_FILTER_CONTROL_MTI).toBool();
+    const int mti = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_MTI).toInt();
+    const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    const double currentHeading = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+    const double currentOwnShipLat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
+    const double currentOwnShipLon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
 
     short int hdt_raw = heading_up ? 0 : static_cast<short>(SCALE_DEGREES_TO_RAW(currentHeading));
     int bearing_raw = angle_raw + hdt_raw;
@@ -265,8 +265,8 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
     /*Trail handler*/
     if(is_trail_enable)
     {
-        uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
-//        const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+        uint cur_range = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
+//        const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //        switch (unit) {
 //        case 1:
@@ -363,7 +363,7 @@ void RadarEngine::RadarEngine::ComputeColourMap()
     for (int i = 0; i < BLOB_COLOURS; i++)
         m_colour_map_rgb[i] = QColor(0, 0, 0);
 
-    const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+    const int preset_color = RadarConfig::getInstance("")->getConfig(VOLATILE_DISPLAY_PRESET_COLOR).toInt();
     QColor color;
 
     if(preset_color == 0)
@@ -375,7 +375,7 @@ void RadarEngine::RadarEngine::ComputeColourMap()
     m_colour_map_rgb[BLOB_INTERMEDIATE] = color;
     m_colour_map_rgb[BLOB_WEAK] = color;
 
-    const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
     if (is_trail_enable)
     {
         /*
@@ -457,8 +457,8 @@ void RadarEngine::RadarEngine::ComputeTargetTrails()
         TRAIL_MAX_REVOLUTIONS + 1
     };
 
-    const bool is_trail_enable = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
-    const int trail = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
+    const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
+    const int trail = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
     TrailRevolutionsAge maxRev = maxRevs[trail];
     if (!is_trail_enable)
         maxRev = 0;
@@ -508,17 +508,17 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
     ResetSpokes();
     radarReceive->exitReq();
     sleep(1);
-    radarTransmit->setMulticastData(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
-                                    RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_CMD).toUInt());
+    radarTransmit->setMulticastData(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
+                                    RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_PORT_CMD).toUInt());
     radarReceive->start();
 
 }
 
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
-    uint cur_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
-    const uint cur_scale = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
-//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    uint cur_range = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
+    const uint cur_scale = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
 //    case 1:
@@ -529,7 +529,7 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
 //    }
     if ((cur_range != static_cast<uint>(new_range)))
     {
-        RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range*2/10);
+        RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,new_range*2/10);
 //        m_range_meters = new_range;
 //        emit signal_range_change(new_range/10);
         ResetSpokes();
@@ -548,7 +548,7 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
     quint64 now = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
     radar_timeout = now + WATCHDOG_TIMEOUT;
 //    RadarState *cur_radar_state = &state_radar;
-    RadarState prev_cur_radar_state = static_cast<RadarState>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_RADAR_STATUS).toInt());
+    RadarState prev_cur_radar_state = static_cast<RadarState>(RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_STATUS).toInt());
     RadarState cur_radar_state;
 //    qDebug()<<Q_FUNC_INFO;
     switch (report_type)
@@ -563,11 +563,11 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
         }
         if(cur_radar_state == RADAR_WAKING_UP)
         {
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_WAKINGUP_TIME,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_WAKINGUP_TIME,static_cast<quint8>(value));
         }
 
         if(prev_cur_radar_state != RADAR_TRANSMIT)
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_STATUS,static_cast<quint8>(cur_radar_state));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,static_cast<quint8>(cur_radar_state));
 
         qDebug()<<Q_FUNC_INFO<<"report status radar now"<<static_cast<RadarState>(report_field);
         qDebug()<<Q_FUNC_INFO<<"report status radar prev"<<prev_cur_radar_state;
@@ -576,34 +576,34 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
         switch (report_field)
         {
         case RADAR_GAIN:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_GAIN,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_GAIN,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report gain"<<filter.gain;
             emit signal_updateReport();
             break;
         case RADAR_RAIN:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_RAIN,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_RAIN,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report rain"<<filter.rain;
             emit signal_updateReport();
             break;
         case RADAR_SEA:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_SEA,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_SEA,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report sea"<<filter.sea;
             emit signal_updateReport();
             break;
         case RADAR_TARGET_BOOST:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_TARGET_BOOST,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_TARGET_BOOST,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report TargetBoost"<<filter.targetBoost;
             break;
         case RADAR_LOCAL_INTERFERENCE_REJECTION:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_INTERFERENCE,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_INTERFERENCE,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report local interference"<<filter.LInterference;
             break;
         case RADAR_TARGET_EXPANSION:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_FILTER_DATA_TARGET_EXPAND,static_cast<quint8>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_TARGET_EXPAND,static_cast<quint8>(value));
 //            qDebug()<<Q_FUNC_INFO<<"report argetExpan"<<filter.targetExpan;
             break;
         case RADAR_RANGE:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,static_cast<uint>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE,static_cast<uint>(value));
             checkRange(value);
             qDebug()<<Q_FUNC_INFO<<"report range"<<value;
             break;
@@ -620,13 +620,13 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
             int bearing = static_cast<int>(value) / 10;
             if (bearing > 180)
                 bearing = bearing - 360;
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_ALIGN_DATA_BEARING,static_cast<uint>(bearing));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_ALIGN_DATA_BEARING,static_cast<uint>(bearing));
             qDebug()<<Q_FUNC_INFO<<"report radar bearing alignment"<<bearing;
             break;
         }
         case RADAR_ANTENA:
             // antenna height
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_ALIGN_DATA_BEARING,static_cast<uint>(value));
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_ALIGN_DATA_BEARING,static_cast<uint>(value));
             qDebug()<<Q_FUNC_INFO<<"report radar antenna_height"<<value/1000;
             break;
         default:
@@ -637,23 +637,23 @@ void RadarEngine::RadarEngine::receiveThread_Report(quint8 report_type, quint8 r
         switch (report_field)
         {
         case RADAR_SCAN_SPEED:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_SCAN_DATA_SCAN_SPEED,value);
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_SCAN_DATA_SCAN_SPEED,value);
             qDebug()<<Q_FUNC_INFO<<"report radar scan_speed"<<value ;
             break;
         case RADAR_NOISE_REJECT:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_SCAN_DATA_NOISE_REJECT,value);
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_SCAN_DATA_NOISE_REJECT,value);
             qDebug()<<Q_FUNC_INFO<<"report radar noise_reject"<<value ;
             break;
         case RADAR_TARGET_SEPARATION:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_SCAN_DATA_TARGET_SEPARATION,value);
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_SCAN_DATA_TARGET_SEPARATION,value);
             qDebug()<<Q_FUNC_INFO<<"report radar target_sep"<<value;
             break;
         case RADAR_LOBE_SUPRESION:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_SCAN_DATA_SIDE_LOBE_SUPPRESSION,value);
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_SCAN_DATA_SIDE_LOBE_SUPPRESSION,value);
             qDebug()<<Q_FUNC_INFO<<"report radar side_lobe_suppression"<<value ; //0->auto
             break;
         case RADAR_INTERFERENT:
-            RadarConfig::RadarConfig::getInstance("")->setConfig(RadarConfig::VOLATILE_RADAR_PARAMS_SCAN_DATA_LOCAL_INTERFERENCE,value);
+            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_SCAN_DATA_LOCAL_INTERFERENCE,value);
             qDebug()<<Q_FUNC_INFO<<"report radar local_interference_rejection"<<value;
             break;
         default:

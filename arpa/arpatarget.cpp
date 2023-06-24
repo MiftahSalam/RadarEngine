@@ -105,7 +105,7 @@ bool ARPATarget::MultiPix(int ang, int rad)
     // pol must start on the contour of the blob
     // false if not
     // if false clears out pixels of th blob in hist
-    int length = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN).toInt();
+    int length = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN).toInt();
     Polar start;
     start.angle = ang;
     start.r = rad;
@@ -340,8 +340,8 @@ void ARPATarget::ResetPixels()
 
 QPointF ARPATarget::blobPixelPosition()
 {
-    double m_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    double m_range = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
 //    case 1:
@@ -351,8 +351,8 @@ QPointF ARPATarget::blobPixelPosition()
 //        break;
 //    }
 
-    const double currentOwnShipLon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
-    const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
+    const double currentOwnShipLon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
+    const double currentOwnShipLat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
     double y_max = currentOwnShipLat +
             static_cast<double>(m_max_r.r) / static_cast<double>RETURNS_PER_LINE * m_range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(m_max_angle.angle))) / 60. / 1852.;
     double x_max = currentOwnShipLon +
@@ -373,7 +373,7 @@ QPointF ARPATarget::blobPixelPosition()
 
 void ARPATarget::RefreshTarget(int dist)
 {
-    const double m_range = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+    const double m_range = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
     Position prev_X;
     Position prev2_X;
     Position own_pos;
@@ -386,8 +386,8 @@ void ARPATarget::RefreshTarget(int dist)
     if (m_status == LOST)
         return;
 
-    const double currentOwnShipLon = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
-    const double currentOwnShipLat = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
+    const double currentOwnShipLon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
+    const double currentOwnShipLat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
 
     own_pos.lat = currentOwnShipLat;
     own_pos.lon = currentOwnShipLon;
@@ -534,7 +534,7 @@ void ARPATarget::RefreshTarget(int dist)
     Polar back = pol;
     if (GetTarget(&pol, dist1))
     {
-        const int max_target_size = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE).toInt();
+        const int max_target_size = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE).toInt();
         ResetPixels();
         // target too large? (land masses?) get rid of it
         if (abs(back.r - pol.r) > max_target_size || abs(m_max_r.r - m_min_r.r) > max_target_size ||

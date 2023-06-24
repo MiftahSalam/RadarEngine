@@ -5,8 +5,11 @@
 #include <QSettings>
 #include <QDateTime>
 
-RadarConfig::RadarConfig* RadarConfig::RadarConfig::instance{nullptr};
-QStringList RadarConfig::RadarConfig::nonVolatileKeys =
+using namespace RadarEngine;
+
+RadarConfig* RadarConfig::instance{nullptr};
+
+QStringList RadarConfig::nonVolatileKeys =
         QStringList()<<NON_VOLATILE_PPI_DISPLAY_SHOW_RING
                     <<NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS
                    <<NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER
@@ -55,7 +58,7 @@ QStringList RadarConfig::RadarConfig::nonVolatileKeys =
 <<NON_VOLATILE_NAV_NET_CONFIG
                       ;
 
-RadarConfig::RadarConfig::RadarConfig(QObject *parent, QString path): QObject (parent), filePath(path)
+RadarConfig::RadarConfig(QObject *parent, QString path): QObject (parent), filePath(path)
 {
     QFile file(filePath);
     if(filePath.isEmpty() || !file.exists())
@@ -68,7 +71,7 @@ RadarConfig::RadarConfig::RadarConfig(QObject *parent, QString path): QObject (p
     else loadConfig();
 }
 
-bool RadarConfig::RadarConfig::setConfig(const QString &key, const QVariant &value)
+bool RadarConfig::setConfig(const QString &key, const QVariant &value)
 {
     bool valid = false;
     if(volatileVar.contains(key))
@@ -86,7 +89,7 @@ bool RadarConfig::RadarConfig::setConfig(const QString &key, const QVariant &val
     return valid;
 }
 
-QVariant RadarConfig::RadarConfig::getConfig(const QString &key) const
+QVariant RadarConfig::getConfig(const QString &key) const
 {
     QVariant val;
     if(volatileVar.contains(key)) val = volatileVar.value(key);
@@ -95,7 +98,7 @@ QVariant RadarConfig::RadarConfig::getConfig(const QString &key) const
     return val;
 }
 
-void RadarConfig::RadarConfig::loadConfig()
+void RadarConfig::loadConfig()
 {
     qDebug()<<Q_FUNC_INFO;
     //volatile
@@ -155,7 +158,7 @@ void RadarConfig::RadarConfig::loadConfig()
         qWarning()<<Q_FUNC_INFO<<"key not found"<<key;
     }
 }
-void RadarConfig::RadarConfig::initConfig()
+void RadarConfig::initConfig()
 {
     qDebug()<<Q_FUNC_INFO;
     //non volatile
@@ -213,7 +216,7 @@ void RadarConfig::RadarConfig::initConfig()
 
 }
 
-void RadarConfig::RadarConfig::saveConfig() const
+void RadarConfig::saveConfig() const
 {
     qDebug()<<Q_FUNC_INFO<<filePath;
 
@@ -227,11 +230,11 @@ void RadarConfig::RadarConfig::saveConfig() const
     }
 }
 
-RadarConfig::RadarConfig::~RadarConfig()
+RadarConfig::~RadarConfig()
 {
     saveConfig();
 }
-RadarConfig::RadarConfig* RadarConfig::RadarConfig::getInstance(const QString& path )
+RadarConfig* RadarConfig::getInstance(const QString& path )
 {
     if(instance == nullptr) instance = new RadarConfig(nullptr, path);
     else

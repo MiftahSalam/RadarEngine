@@ -151,10 +151,10 @@ void RadarReceive::run()
 {
     QUdpSocket socketDataReceive;
     QUdpSocket socketReportReceive;
-    QString data_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_DATA).toString();
-    QString report_thread = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_IP_REPORT).toString();
-    quint16 data_port_thread = static_cast<quint16> (RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_DATA).toUInt());
-    quint16 reportport_thread = static_cast<quint16>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_RADAR_NET_PORT_REPORT).toUInt());
+    QString data_thread = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_DATA).toString();
+    QString report_thread = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_REPORT).toString();
+    quint16 data_port_thread = static_cast<quint16> (RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_PORT_DATA).toUInt());
+    quint16 reportport_thread = static_cast<quint16>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_PORT_REPORT).toUInt());
     exit_req = false;
 
     QHostAddress groupAddressData(data_thread);

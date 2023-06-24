@@ -38,8 +38,8 @@ void GuardZone::ProcessSpoke(int angle, UINT8* data/*, UINT8* hist, int range*/)
     int range_start = m_inner_range;  // Convert from meters to 0..511
     int range_end = m_outer_range;    // Convert from meters to 0..511
     bool in_guard_zone = false;
-    const bool is_heading_up =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
-    const double hdt = is_heading_up ? RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble() : 0.;
+    const bool is_heading_up =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
+    const double hdt = is_heading_up ? RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble() : 0.;
 
     m_start_bearing = SCALE_DEGREES_TO_RAW2048(m_start_bearing_deg-hdt);
     m_end_bearing = SCALE_DEGREES_TO_RAW2048(m_end_bearing_deg-hdt);
@@ -130,43 +130,43 @@ void GuardZone::ProcessSpoke(int angle, UINT8* data/*, UINT8* hist, int range*/)
 void GuardZone::trigger_configChange(const QString key, const QVariant val)
 {
     //    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
-    if(key == RadarConfig::NON_VOLATILE_GZ_START_RANGE)
+    if(key == NON_VOLATILE_GZ_START_RANGE)
     {
     }
-    else if(key == RadarConfig::NON_VOLATILE_GZ_START_BEARING)
+    else if(key == NON_VOLATILE_GZ_START_BEARING)
     {
-        const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+        const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
         m_start_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble()+hdt);
         ResetBogeys();
     }
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_RANGE)
+    else if(key == NON_VOLATILE_GZ_END_RANGE)
     {
-        const int curRange =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toInt();
+        const int curRange =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toInt();
         m_outer_range = val.toInt()*RETURNS_PER_LINE/curRange;
         ResetBogeys();
     }
-    else if(key == RadarConfig::NON_VOLATILE_GZ_END_BEARING)
+    else if(key == NON_VOLATILE_GZ_END_BEARING)
     {
-        const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+        const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
         m_end_bearing = SCALE_DEGREES_TO_RAW2048(val.toDouble()+hdt);
         ResetBogeys();
     }
-    else if(key == RadarConfig::NON_VOLATILE_GZ_MODE)
+    else if(key == NON_VOLATILE_GZ_MODE)
     {
         m_type = static_cast<GZType>(val.toInt());
         ResetBogeys();
     }
-    else if(key == RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ)
+    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ)
     {
-        m_show = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool();
+        m_show = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool();
         ResetBogeys();
     }
 }
 */
 void GuardZone::setInnerRange(const int range)
 {
-    double curRange = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
 //    case 1:
@@ -182,8 +182,8 @@ void GuardZone::setInnerRange(const int range)
 
 void GuardZone::setOutterRange(const int range)
 {
-    double curRange = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-//    const quint8 unit = static_cast<quint8>(RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
 //    case 1:
@@ -199,7 +199,7 @@ void GuardZone::setOutterRange(const int range)
 
 void GuardZone::setStartBearing(const double deg)
 {
-//    const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+//    const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
     m_start_bearing_deg = deg;
     m_start_bearing = SCALE_DEGREES_TO_RAW2048(deg+hdt);
@@ -208,7 +208,7 @@ void GuardZone::setStartBearing(const double deg)
 
 void GuardZone::setEndBearing(const double deg)
 {
-//    const double hdt =  RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+//    const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
     m_end_bearing_deg = deg;
     m_end_bearing = SCALE_DEGREES_TO_RAW2048(deg+hdt);

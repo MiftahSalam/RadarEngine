@@ -5,10 +5,10 @@
 #include "shared/constants.h"
 
 #include "guardzone.h"
-#include "radarreceive.h"
-#include "radartransmit.h"
+#include "stream/radarreceive.h"
+#include "stream/radartransmit.h"
 #include "radardraw.h"
-#include "radararpa.h"
+#include "arpa/radararpa.h"
 
 #include <QTimer>
 

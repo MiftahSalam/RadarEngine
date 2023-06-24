@@ -300,7 +300,7 @@ void RDVert::DrawRadarSweep(double angle)
             0.f, 1.f,
         };
 
-        const int preset_color = RadarConfig::RadarConfig::getInstance("")->getConfig(RadarConfig::VOLATILE_DISPLAY_PRESET_COLOR).toInt();
+        const int preset_color = RadarConfig::getInstance("")->getConfig(VOLATILE_DISPLAY_PRESET_COLOR).toInt();
         GLfloat colors[3][3] = {
             {0.0f, 1.0f, 0.0f},
             {0.0f, 1.0f, 0.0f},

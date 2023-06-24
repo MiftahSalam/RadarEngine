@@ -1,11 +1,11 @@
 #ifndef RADARCONFIG_H
 #define RADARCONFIG_H
 
-#include "radarconfig_global.h"
+#include "shared/constants.h"
 #include <QVariant>
 #include <QObject>
 
-namespace RadarConfig {
+namespace RadarEngine {
 
 const QString NON_VOLATILE_PPI_DISPLAY_SHOW_RING("PPI/Display/show_ring");
 const QString NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS = "PPI/Display/show_compass";
