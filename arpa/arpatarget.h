@@ -56,12 +56,13 @@ class ARPATarget : public QObject
 public:
     explicit ARPATarget(QObject *parent = nullptr, RadarEngine *re = nullptr);
     ~ARPATarget() override;
+
     void RefreshTarget(int dist);
     void SetStatusLost();
     target_status GetStatus() { return m_status; }
     QPointF BlobPixelPosition();
 
-    int targetId/*, m_range*/;
+    int targetId;
     Polar maxAngle, minAngle, maxR, minR;
     Polar maxAngleFuture, minAngleFuture, maxRFuture, minRFuture;
     bool futureFirst;

@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include "shared/global.h"
+
 namespace RadarEngine {
 class Polar {
  public:

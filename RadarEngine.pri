@@ -21,6 +21,7 @@ HEADERS_STREAM += \
 SOURCES += \
            $$PWD/radarconfig.cpp \
            $$PWD/radarengine.cpp \
+           $$PWD/shared/utils.cpp \
            $$PWD/stream/radarreceive.cpp \
            $$PWD/stream/radartransmit.cpp \
            $$PWD/radardraw.cpp \

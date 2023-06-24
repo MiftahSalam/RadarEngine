@@ -7,33 +7,6 @@ static int target_id_count = 0;
 
 using namespace RadarEngine;
 
-Position Polar2Pos(Polar pol, Position own_ship, double range)
-{
-    // The "own_ship" in the fumction call can be the position at an earlier time than the current position
-    // converts in a radar image angular data r ( 0 - 512) and angle (0 - 2096) to position (lat, lon)
-    // based on the own ship position own_ship
-    Position pos;
-    pos.lat = own_ship.lat +
-            static_cast<double>(pol.r) / static_cast<double>(RETURNS_PER_LINE) * range * cos(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) / 60. / 1852.;
-    pos.lon = own_ship.lon +
-            static_cast<double>(pol.r) / static_cast<double>(RETURNS_PER_LINE) * range * sin(deg2rad(SCALE_RAW_TO_DEGREES2048(pol.angle))) /
-            cos(deg2rad(own_ship.lat)) / 60. / 1852.;
-    return pos;
-}
-
-Polar Pos2Polar(Position p, Position own_ship, int range)
-{
-    // converts in a radar image a lat-lon position to angular data
-    Polar pol;
-    double dif_lat = p.lat;
-    dif_lat -= own_ship.lat;
-    double dif_lon = (p.lon - own_ship.lon) * cos(deg2rad(own_ship.lat));
-    pol.r = static_cast<int>(sqrt(dif_lat * dif_lat + dif_lon * dif_lon) * 60. * 1852. * static_cast<double>(RETURNS_PER_LINE) / static_cast<double>(range) + 1);
-    pol.angle = static_cast<int>((atan2(dif_lon, dif_lat)) * static_cast<double>(LINES_PER_ROTATION) / (2. * M_PI) + 1);  // + 1 to minimize rounding errors
-    if (pol.angle < 0) pol.angle += LINES_PER_ROTATION;
-    return pol;
-}
-
 ARPATarget::ARPATarget(QObject *parent, RadarEngine *re) :
     QObject(parent),m_ri(re)
 {
@@ -64,6 +37,7 @@ ARPATarget::~ARPATarget()
         m_kalman = nullptr;
     }
 }
+
 bool ARPATarget::pix(int ang, int rad)
 {
     if (rad <= 1 || rad >= RETURNS_PER_LINE - 1) //  avoid range ring
@@ -75,6 +49,7 @@ bool ARPATarget::pix(int ang, int rad)
         return ((m_ri->m_history[MOD_ROTATION2048(ang)].line[rad] & 128) != 0);
 
 }
+
 bool ARPATarget::findContourFromInside(Polar* pol)
 {  // moves pol to contour of blob
     // true if success
@@ -100,6 +75,7 @@ bool ARPATarget::findContourFromInside(Polar* pol)
         return false;
 
 }
+
 bool ARPATarget::multiPix(int ang, int rad)
 {  // checks the blob has a contour of at least length pixels
     // pol must start on the contour of the blob
@@ -234,6 +210,7 @@ void ARPATarget::SetStatusLost()
         p.r = 0;
         //    PassARPAtoOCPN(&p, L);
     }
+
     m_status = LOST;
     targetId = 0;
     m_automatic = false;
@@ -249,6 +226,7 @@ void ARPATarget::SetStatusLost()
 
     emit Signal_LostTarget(cur_target_id);
 }
+
 #define PIX(aa, rr)       \
     if (rr > 510) continue; \
     if (multiPix(aa, rr)) { \
@@ -296,6 +274,7 @@ bool ARPATarget::findNearestContour(Polar* pol, int dist)
     }
     return false;
 }
+
 bool ARPATarget::getTarget(Polar* pol, int dist1)
 {
     // general target refresh
@@ -326,6 +305,7 @@ bool ARPATarget::getTarget(Polar* pol, int dist1)
     }
     return true;
 }
+
 void ARPATarget::resetPixels()
 {
     //    qDebug()<<Q_FUNC_INFO;
@@ -368,6 +348,7 @@ QPointF ARPATarget::BlobPixelPosition()
     double y_avg = (y_max+y_min)/2;
 
     qDebug()<<Q_FUNC_INFO<<"m_range"<<m_range<<"id"<<targetId<<"maxR"<<maxR.r<<"minR"<<minR.r;
+
     return QPointF(x_avg,y_avg);
 }
 
@@ -834,6 +815,7 @@ int ARPATarget::getContour(Polar* pol)
         if(current.angle > MAX_BREAK_FIND_COUNTOUR_ANGLE)
             break;
     }
+
     m_contour_length = count;
     //  CalculateCentroid(*target);    we better use the real centroid instead of the average, todo
     if (minAngle.angle < 0)
@@ -841,6 +823,7 @@ int ARPATarget::getContour(Polar* pol)
         minAngle.angle += LINES_PER_ROTATION;
         maxAngle.angle += LINES_PER_ROTATION;
     }
+
     pol->angle = (maxAngle.angle + minAngle.angle) / 2; //av angle of centroid
     if (maxR.r > RETURNS_PER_LINE - 1 || minR.r > RETURNS_PER_LINE - 1)
         return 10;  // return code 10 r too large
