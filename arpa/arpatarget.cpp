@@ -44,9 +44,9 @@ bool ARPATarget::pix(int ang, int rad)
         return false;
 
     if (m_check_for_duplicate)        // check bit 1
-        return ((m_ri->m_history[MOD_ROTATION2048(ang)].line[rad] & 64) != 0);
+        return ((m_ri->history[MOD_ROTATION2048(ang)].line[rad] & 64) != 0);
     else        // check bit 0
-        return ((m_ri->m_history[MOD_ROTATION2048(ang)].line[rad] & 128) != 0);
+        return ((m_ri->history[MOD_ROTATION2048(ang)].line[rad] & 128) != 0);
 
 }
 
@@ -187,7 +187,7 @@ bool ARPATarget::multiPix(int ang, int rad)
     for (int a = min_angle.angle; a <= max_angle.angle; a++)
     {
         for (int r = min_r.r; r <= max_r.r; r++)
-            m_ri->m_history[MOD_ROTATION2048(a)].line[r] &= 63;
+            m_ri->history[MOD_ROTATION2048(a)].line[r] &= 63;
 
     }
     return false;
@@ -314,7 +314,7 @@ void ARPATarget::resetPixels()
     {
         if (r >= LINES_PER_ROTATION || r < 0) continue;
         for (int a = minAngle.angle - DISTANCE_BETWEEN_TARGETS; a <= maxAngle.angle + DISTANCE_BETWEEN_TARGETS; a++)
-            m_ri->m_history[MOD_ROTATION2048(a)].line[r] = m_ri->m_history[MOD_ROTATION2048(a)].line[r] & 127;
+            m_ri->history[MOD_ROTATION2048(a)].line[r] = m_ri->history[MOD_ROTATION2048(a)].line[r] & 127;
     }
 }
 
@@ -377,14 +377,14 @@ void ARPATarget::RefreshTarget(int dist)
     //    qDebug()<<"old pol "<<pol.angle<<pol.r;
     //    qDebug()<<"old pos "<<currentOwnShipLat<<currentOwnShipLon<<m_position.lat<<m_position.lon<<m_range;
 
-    quint64 time1 = m_ri->m_history[MOD_ROTATION2048(pol.angle)].time;
+    quint64 time1 = m_ri->history[MOD_ROTATION2048(pol.angle)].time;
     int margin = SCAN_MARGIN;
     if (m_pass_nr == PASS2)
     {
         margin += 100;
 //        qDebug()<<Q_FUNC_INFO<<"try pass2";
     }
-    quint64 time2 = m_ri->m_history[MOD_ROTATION2048(pol.angle + margin)].time;
+    quint64 time2 = m_ri->history[MOD_ROTATION2048(pol.angle + margin)].time;
     if ((time1 < (m_refresh + SCAN_MARGIN2) || time2 < time1) && m_status != 0)
     {
         quint64 now = static_cast<quint64>(QDateTime::currentDateTimeUtc().toMSecsSinceEpoch());  // millis
@@ -542,8 +542,8 @@ void ARPATarget::RefreshTarget(int dist)
         {
             // as this is the first measurement, move target to measured position
             Position p_own;
-            p_own.lat = m_ri->m_history[MOD_ROTATION2048(pol.angle)].lat;  // get the position at receive time
-            p_own.lon = m_ri->m_history[MOD_ROTATION2048(pol.angle)].lon;
+            p_own.lat = m_ri->history[MOD_ROTATION2048(pol.angle)].lat;  // get the position at receive time
+            p_own.lon = m_ri->history[MOD_ROTATION2048(pol.angle)].lon;
             position = Polar2Pos(pol, p_own, m_range);  // using own ship location from the time of reception
             position.dlat_dt = 0.;
             position.dlon_dt = 0.;
@@ -835,7 +835,7 @@ int ARPATarget::getContour(Polar* pol)
         pol->angle -= LINES_PER_ROTATION;
 
     pol->r = (maxR.r + minR.r) / 2; //av radius of centroid
-    pol->time = m_ri->m_history[MOD_ROTATION2048(pol->angle)].time;
+    pol->time = m_ri->history[MOD_ROTATION2048(pol->angle)].time;
     return 0;  //  succes, blob found
 }
 

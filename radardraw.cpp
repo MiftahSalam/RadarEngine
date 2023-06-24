@@ -208,7 +208,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
     {
         strength = data[radius];
 
-        BlobColour actual_colour = m_ri->m_colour_map[strength];
+        BlobColour actual_colour = m_ri->colourMap[strength];
         if (actual_colour == previous_colour)
         {
             // continue with same color, just register it
@@ -223,7 +223,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
         }
         else if (previous_colour != BLOB_NONE && (previous_colour != actual_colour))
         {
-            colour = m_ri->m_colour_map_rgb[previous_colour];
+            colour = m_ri->colourMapRGB[previous_colour];
 
             SetBlob(line, angle, angle + 1, r_begin, r_end, static_cast<GLubyte>(colour.red()), static_cast<GLubyte>(colour.green()), static_cast<GLubyte>(colour.blue()), static_cast<GLubyte>(colour.alpha()));
 
@@ -239,7 +239,7 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
 
     if (previous_colour != BLOB_NONE)
     {  // Draw final blob
-        colour = m_ri->m_colour_map_rgb[previous_colour];
+        colour = m_ri->colourMapRGB[previous_colour];
 
         SetBlob(line, angle, angle + 1, r_begin, r_end, static_cast<GLubyte>(colour.red()), static_cast<GLubyte>(colour.green()), static_cast<GLubyte>(colour.blue()), static_cast<GLubyte>(colour.alpha()));
     }
@@ -415,10 +415,10 @@ void RDShader::ProcessRadarSpoke(int angle, UINT8* data, size_t len)
         for (size_t r = 0; r < len; r++)
         {
             GLubyte strength = data[r];
-            BlobColour colour = m_re->m_colour_map[strength];
-            d[0] = static_cast<unsigned char>(m_re->m_colour_map_rgb[colour].red());
-            d[1] = static_cast<unsigned char>(m_re->m_colour_map_rgb[colour].green());
-            d[2] = static_cast<unsigned char>(m_re->m_colour_map_rgb[colour].blue());
+            BlobColour colour = m_re->colourMap[strength];
+            d[0] = static_cast<unsigned char>(m_re->colourMapRGB[colour].red());
+            d[1] = static_cast<unsigned char>(m_re->colourMapRGB[colour].green());
+            d[2] = static_cast<unsigned char>(m_re->colourMapRGB[colour].blue());
             d[3] = colour != BLOB_NONE ? alpha : 0;
             d += m_channels;
         }
@@ -429,8 +429,8 @@ void RDShader::ProcessRadarSpoke(int angle, UINT8* data, size_t len)
         for (size_t r = 0; r < len; r++)
         {
             GLubyte strength = data[r];
-            BlobColour colour = m_re->m_colour_map[strength];
-            *d++ = (static_cast<unsigned char>(m_re->m_colour_map_rgb[colour].red()) * alpha) >> 8;
+            BlobColour colour = m_re->colourMap[strength];
+            *d++ = (static_cast<unsigned char>(m_re->colourMapRGB[colour].red()) * alpha) >> 8;
         }
     }
 }

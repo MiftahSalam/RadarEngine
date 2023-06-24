@@ -135,7 +135,7 @@ bool RadarArpa::pix(int ang, int rad)
         return false;
 
     //    qDebug()<<Q_FUNC_INFO<<ang<<rad;
-    return ((m_ri->m_history[MOD_ROTATION2048(ang)].line[rad] & 128) != 0);
+    return ((m_ri->history[MOD_ROTATION2048(ang)].line[rad] & 128) != 0);
 }
 
 bool RadarArpa::MultiPix(int ang, int rad)
@@ -247,7 +247,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
     for (int a = min_angle.angle; a <= max_angle.angle; a++)
     {
         for (int r = min_r.r; r <= max_r.r; r++)
-            m_ri->m_history[MOD_ROTATION2048(a)].line[r] &= 63;
+            m_ri->history[MOD_ROTATION2048(a)].line[r] &= 63;
     }
     return false;
 }
