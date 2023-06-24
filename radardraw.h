@@ -25,7 +25,7 @@ class RadarDraw
 public:
     static RadarDraw* make_Draw(RadarEngine *re, int draw_method);
 
-    virtual void init(QObject *parent = nullptr) = 0;
+    virtual void Init(QObject *parent = nullptr) = 0;
     virtual void DrawRadarImage() = 0;
     virtual void DrawRadarSweep(double angle) = 0;
     virtual void ProcessRadarSpoke(int angle, quint8* data, size_t len) = 0;
@@ -40,7 +40,7 @@ class RDShader : public RadarDraw
 {
 public:
     RDShader(RadarEngine* re);
-    void init(QObject *parent = nullptr) override;
+    void Init(QObject *parent = nullptr) override;
     void DrawRadarImage() override;
     virtual void DrawRadarSweep(double angle) override;
     void ProcessRadarSpoke(int angle, quint8 *data, size_t len) override;
@@ -73,7 +73,7 @@ class RDVert : public RadarDraw
 {
 public:
     RDVert(RadarEngine* re);
-    void init(QObject *parent = nullptr) override;
+    void Init(QObject *parent = nullptr) override;
     void DrawRadarImage() override;
     virtual void DrawRadarSweep(double angle) override;
     void ProcessRadarSpoke(int angle, quint8 *data, size_t len) override;

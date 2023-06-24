@@ -57,8 +57,8 @@ RadarDraw* RadarDraw::make_Draw(RadarEngine *ri, int draw_method)
 
 RadarDraw::~RadarDraw() {}
 
-QString RadarDraw::GetDrawingMethods() {
-
+QString RadarDraw::GetDrawingMethods()
+{
     return methods;
 }
 
@@ -105,7 +105,7 @@ RDVert::RDVert(RadarEngine* re):
 
 }
 
-void RDVert::init(QObject *parent)
+void RDVert::Init(QObject *parent)
 {
     m_program = new QOpenGLShaderProgram(parent);
     m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vertexShaderSource);
@@ -148,13 +148,11 @@ void RDVert::SetBlob(VertexLine* line, int angle_begin, int angle_end, int r1, i
     }
 
     // First triangle
-    //    qDebug()<<Q_FUNC_INFO<<arc1<<arc2<<r1<<r2;
     ADD_VERTEX_POINT(arc1, r1, red, green, blue, alpha)
     ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha)
     ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha)
 
     // Second triangle
-
     ADD_VERTEX_POINT(arc2, r1, red, green, blue, alpha)
     ADD_VERTEX_POINT(arc1, r2, red, green, blue, alpha)
     ADD_VERTEX_POINT(arc2, r2, red, green, blue, alpha)
@@ -202,20 +200,15 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
             line->count = 0;
             return;
         }
-        //        qDebug()<<"init loc";
-
     }
     line->count = 0;
     line->timeout = now + 6000;
-    //    line->timeout = now + m_ri->m_pi->m_settings.max_age;
 
     for (size_t radius = 0; radius < len; radius++)
     {
         strength = data[radius];
 
         BlobColour actual_colour = m_ri->m_colour_map[strength];
-        //        qDebug()<<Q_FUNC_INFO<<"strength "<<strength<<"actual color "<<actual_colour;
-
         if (actual_colour == previous_colour)
         {
             // continue with same color, just register it
@@ -254,9 +247,6 @@ void RDVert::ProcessRadarSpoke(int angle, quint8 *data, size_t len)
 
 void RDVert::DrawRadarImage()
 {
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glEnableClientState(GL_COLOR_ARRAY);
-
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     m_program->bind();
 
@@ -265,21 +255,9 @@ void RDVert::DrawRadarImage()
     f->glEnableVertexAttribArray(0);
     f->glEnableVertexAttribArray(1);
 
-    //    qDebug()<<Q_FUNC_INFO;
-//    quint64 now = QDateTime::currentMSecsSinceEpoch();
-
     for (size_t i = 0; i < LINES_PER_ROTATION; i++)
     {
         VertexLine* line = &m_vertices[i];
-        /*
-        if (!line->count || TIMED_OUT(now, line->timeout))
-        {
-            continue;
-        }
-        */
-//        glVertexPointer(2, GL_FLOAT, sizeof(VertexPoint), &line->points[0].x);
-//        glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(VertexPoint), &line->points[0].red);
-//        glDrawArrays(GL_TRIANGLES, 0, line->count);
         f->glVertexAttribPointer(m_posAttr, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPoint), &line->points[0].x);
         f->glVertexAttribPointer(m_colAttr, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(VertexPoint), &line->points[0].red);
         f->glDrawArrays(GL_TRIANGLES, 0, static_cast<GLsizei>(line->count));
@@ -289,8 +267,6 @@ void RDVert::DrawRadarImage()
     f->glDisableVertexAttribArray(0);
     f->glDisable(GL_BLEND);
     m_program->release();
-//    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
-//    glDisableClientState(GL_COLOR_ARRAY);
 }
 
 void RDVert::DrawRadarSweep(double angle)
@@ -387,12 +363,11 @@ RDShader::~RDShader()
     delete m_vertex;
 }
 
-void RDShader::init(QObject *parent)
+void RDShader::Init(QObject *parent)
 {
     m_start_line = -1;  // No spokes received since last draw
     m_lines = 0;
     m_format = GL_BGRA;
-//    m_format = QOpenGLTexture::RGBA8_UNorm;
     m_channels = SHADER_COLOR_CHANNELS;
 
     m_vertex = new QOpenGLShader(QOpenGLShader::Vertex);
@@ -404,8 +379,7 @@ void RDShader::init(QObject *parent)
     m_program = new QOpenGLShaderProgram(parent);
     m_program->addShader(m_vertex);
     m_program->addShader(m_fragment);
-//    m_program->bindAttributeLocation("gl_TexCoord[0]", 0);
-    //          m_environmentProgram->bindAttributeLocation("aTexCoord", 1);
+
     m_program->link();
     m_program->bind();
     m_program->setUniformValue("tex2d", 0);
@@ -426,43 +400,7 @@ void RDShader::init(QObject *parent)
      f->glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
      f->glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    /*
-    m_texture = new QOpenGLTexture(QImage(QDir::homePath()+QDir::separator()+"side1.png").mirrored());
-    m_texture = new QOpenGLTexture(QOpenGLTexture::Target2D);
-    m_texture->setMinMagFilters(QOpenGLTexture::Linear, QOpenGLTexture::Linear);
-    m_texture->create();
-
-    m_texture->setSize(100, 100, 1);
-    m_texture->setFormat(m_format);
-    m_texture->allocateStorage(QOpenGLTexture::BGRA,QOpenGLTexture::UInt8);
-//    QImage image = QPixmap(10,10).toImage();
-    QImage image(QDir::homePath()+QDir::separator()+"side1.png");
-    m_texture->setData(0,0,0,100,100,1,0,QOpenGLTexture::BGRA,QOpenGLTexture::UInt8,static_cast<const void*>(image.bits()));
-    */
-
-    memset(&m_data,0,sizeof(unsigned char)*SHADER_COLOR_CHANNELS * LINES_PER_ROTATION * RETURNS_PER_LINE);
-
-    /*
-
-    float vertices[4][8] = {
-        {-1.f,  -1.f, 0.0f,   -1.f, -1.f},
-        {1.f, -1.f, 0.0f,   1.f, 1.0f},
-        {1.f, 1.f, 0.0f,  1.0f, 1.0f},
-        {-1.f,  1.f, 0.0f,  -1.0f, 1.f}
-    };
-    for(int j = 0; j < 4; ++j)
-    {
-        vertData.append(0.2*vertices[j][0]);
-        vertData.append(0.2*vertices[j][1]);
-        vertData.append(0.2*vertices[j][2]);
-
-        vertData.append(vertices[j][3]);
-        vertData.append(vertices[j][4]);
-    }
-    vbo.create();
-    vbo.bind();
-    vbo.allocate(vertData.constData(), vertData.count() * sizeof(GLfloat));
-    */
+     memset(&m_data,0,sizeof(unsigned char)*SHADER_COLOR_CHANNELS * LINES_PER_ROTATION * RETURNS_PER_LINE);
 }
 
 void RDShader::ProcessRadarSpoke(int angle, UINT8* data, size_t len)
@@ -509,14 +447,10 @@ void RDShader::DrawRadarImage()
         return;
       }
 
-
       m_program->bind();
-//      vbo.bind();
-//      m_texture->bind();
 
       QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
 
-//      f->glPushAttrib(GL_TEXTURE_BIT);
       f->glBindTexture(GL_TEXTURE_2D, m_texture);
 
       if (m_start_line > -1) {
@@ -527,8 +461,6 @@ void RDShader::DrawRadarImage()
           // if the new data partly wraps past the end of the texture
           // tell it the two parts separately
           // First remap [0, m_end_line>
-//          m_texture->setData(0,0,0,RETURNS_PER_LINE,end_line,1,0,QOpenGLTexture::BGRA,QOpenGLTexture::UInt8,static_cast<const void*>(m_data));
-
           f->glTexSubImage2D(/* target =   */ GL_TEXTURE_2D,
                           /* level =    */ 0,
                           /* x-offset = */ 0,
@@ -539,12 +471,6 @@ void RDShader::DrawRadarImage()
                           /* type =     */ GL_UNSIGNED_BYTE,
                           /* pixels =   */ m_data);
           // And then remap [m_start_line, LINES_PER_ROTATION>
-
-//          qDebug()<<Q_FUNC_INFO<<"m_start_line * RETURNS_PER_LINE * m_channels"<<m_start_line * RETURNS_PER_LINE * m_channels;
-//          qDebug()<<Q_FUNC_INFO<<"m_data"<<m_data[ m_start_line * RETURNS_PER_LINE * m_channels ];
-//          m_texture->setData(0,m_start_line,0,RETURNS_PER_LINE,LINES_PER_ROTATION - m_start_line,1,0,QOpenGLTexture::BGRA,QOpenGLTexture::UInt8,static_cast<const void*>(m_data + m_start_line * RETURNS_PER_LINE * m_channels));
-
-
           f->glTexSubImage2D(/* target =   */ GL_TEXTURE_2D,
                           /* level =    */ 0,
                           /* x-offset = */ 0,
@@ -556,33 +482,6 @@ void RDShader::DrawRadarImage()
                           /* pixels =   */ m_data + m_start_line * RETURNS_PER_LINE * m_channels);
 
         } else {
-          // Map [m_start_line, m_end_line>
-//            qDebug()<<Q_FUNC_INFO<<"m_start_line * RETURNS_PER_LINE * m_channels"<<m_start_line * RETURNS_PER_LINE * m_channels;
-//            qDebug()<<Q_FUNC_INFO<<"m_data"<<m_data[ m_start_line * RETURNS_PER_LINE * m_channels ];
-//            QImage image(100,100, QImage::Format_ARGB32);
-//            QRgb value;
-
-//             value = qRgba(189, 149, 39, 255); // 0xffbd9527
-//             for(int i = 0; i < 25; i++) image.setPixel(i, i, value);
-
-//             value = qRgba(122, 163, 39, 255); // 0xff7aa327
-//             for(int i = 25; i < 50; i++)
-//             {
-//             image.setPixel(26, i, value);
-//             image.setPixel(i, 26, value);
-//             }
-
-//             value = qRgba(237, 187, 51, 255); // 0xffedba31
-//             for(int i = 50; i < 75; i++)
-//             {
-//             image.setPixel(50, i, value);
-//             image.setPixel(i, 50, value);
-//             }
-
-//             m_texture->setData(0,0,0,RETURNS_PER_LINE,500,1,1,QOpenGLTexture::BGRA,QOpenGLTexture::UInt8,static_cast<const void*>(image.bits()));
-//            m_texture->setData(0,m_start_line,0,RETURNS_PER_LINE,m_lines,1,0,QOpenGLTexture::BGRA,QOpenGLTexture::UInt8,static_cast<const void*>(m_data + m_start_line * RETURNS_PER_LINE * m_channels));
-
-
             f->glTexSubImage2D(/* target =   */ GL_TEXTURE_2D,
                           /* level =    */ 0,
                           /* x-offset = */ 0,
@@ -601,36 +500,5 @@ void RDShader::DrawRadarImage()
       // We tell the GPU to draw a square from (-512,-512) to (+512,+512).
       // The shader morphs this into a circle.
       f->glDrawArrays(GL_QUADS,0,4);
-      /*
-      float fullscale = 1;
-      glBegin(GL_QUADS);
-      glTexCoord2f(-1, -1);
-      glVertex2f(-fullscale, -fullscale);
-      glTexCoord2f(1, -1);
-      glVertex2f(fullscale, -fullscale);
-      glTexCoord2f(1, 1);
-      glVertex2f(fullscale, fullscale);
-      glTexCoord2f(-1, 1);
-      glVertex2f(-fullscale, fullscale);
-      glEnd();
-      */
-
-      /*
-      float fullscale = 1;
-      glBegin(GL_QUADS);
-      glTexCoord2f(0., 1.);
-      glVertex2f(-fullscale, -fullscale);
-      glTexCoord2f(1., 1.);
-      glVertex2f(fullscale, -fullscale);
-      glTexCoord2f(1., 0.);
-      glVertex2f(fullscale, fullscale);
-      glTexCoord2f(0., 0.);
-      glVertex2f(-fullscale, fullscale);
-      glEnd();
-      */
-
-//      m_texture->release();
-//      vbo.release();
       m_program->release();
-//      f->glPopAttrib();
 }

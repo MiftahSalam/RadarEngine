@@ -9,6 +9,7 @@
 namespace RadarEngine {
 
 typedef enum GZType { GZ_ARC, GZ_CIRCLE } GZType;
+
 class RadarEngine;
 
 class GuardZone : public QObject
@@ -17,16 +18,16 @@ class GuardZone : public QObject
 public:
     GuardZone(QObject* parent, RadarEngine* re);
 
-    quint64 arpa_update_time[LINES_PER_ROTATION];
+    quint64 arpaUpdateTime[LINES_PER_ROTATION];
 
     virtual ~GuardZone() override {}
 
-    void setInnerRange(const int range);
-    void setOutterRange(const int range);
-    void setStartBearing(const double deg);
-    void setEndBearing(const double deg);
-    void setType(const GZType type);
-    void setShown(const bool show);
+    void SetInnerRange(const int range);
+    void SetOutterRange(const int range);
+    void SetStartBearing(const double deg);
+    void SetEndBearing(const double deg);
+    void SetType(const GZType type);
+    void SetShown(const bool show);
 
     void ResetBogeys();
     void ProcessSpoke(int angle, UINT8 *data);

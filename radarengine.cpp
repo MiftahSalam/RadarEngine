@@ -77,22 +77,22 @@ void RadarEngine::RadarEngine::setupGZ()
     RadarConfig *instance = RadarConfig::getInstance("");
 
     GuardZone *guardZone = new GuardZone(this,this);
-    guardZone->setType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE).toInt()));
-    guardZone->setShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool());
-    guardZone->setInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE).toInt());
-    guardZone->setOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE).toInt());
-    guardZone->setStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING).toDouble());
-    guardZone->setEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING).toDouble());
+    guardZone->SetType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE).toInt()));
+    guardZone->SetShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ).toBool());
+    guardZone->SetInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE).toInt());
+    guardZone->SetOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE).toInt());
+    guardZone->SetStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING).toDouble());
+    guardZone->SetEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING).toDouble());
 
     guardZones.insert("GZ 1",guardZone);
 
     guardZone = new GuardZone(this,this);
-    guardZone->setType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE1).toInt()));
-    guardZone->setShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1).toBool());
-    guardZone->setInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE1).toInt());
-    guardZone->setOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE1).toInt());
-    guardZone->setStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING1).toDouble());
-    guardZone->setEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING1).toDouble());
+    guardZone->SetType(static_cast<GZType>(instance->getConfig(NON_VOLATILE_GZ_MODE1).toInt()));
+    guardZone->SetShown(instance->getConfig(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1).toBool());
+    guardZone->SetInnerRange(instance->getConfig(NON_VOLATILE_GZ_START_RANGE1).toInt());
+    guardZone->SetOutterRange(instance->getConfig(NON_VOLATILE_GZ_END_RANGE1).toInt());
+    guardZone->SetStartBearing(instance->getConfig(NON_VOLATILE_GZ_START_BEARING1).toDouble());
+    guardZone->SetEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING1).toDouble());
 
     guardZones.insert("GZ 2",guardZone);
 }
@@ -103,18 +103,18 @@ void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
     if(key == NON_VOLATILE_PPI_DISPLAY_LAST_SCALE) trigger_ReqRangeChange(val.toInt());
     else if(key == NON_VOLATILE_RADAR_TRAIL_TIME || key == NON_VOLATILE_RADAR_TRAIL_ENABLE) trigger_clearTrail();
     else if(key == NON_VOLATILE_RADAR_NET_IP_DATA) trigger_ReqRadarSetting();
-    else if(key == NON_VOLATILE_GZ_START_RANGE) guardZones["GZ 1"]->setInnerRange(val.toInt());
-    else if(key == NON_VOLATILE_GZ_START_RANGE1) guardZones["GZ 2"]->setInnerRange(val.toInt());
-    else if(key == NON_VOLATILE_GZ_START_BEARING) guardZones["GZ 1"]->setStartBearing(val.toDouble());
-    else if(key == NON_VOLATILE_GZ_START_BEARING1) guardZones["GZ 2"]->setStartBearing(val.toDouble());
-    else if(key == NON_VOLATILE_GZ_END_RANGE) guardZones["GZ 1"]->setOutterRange(val.toInt());
-    else if(key == NON_VOLATILE_GZ_END_RANGE1) guardZones["GZ 2"]->setOutterRange(val.toInt());
-    else if(key == NON_VOLATILE_GZ_END_BEARING) guardZones["GZ 1"]->setEndBearing(val.toDouble());
-    else if(key == NON_VOLATILE_GZ_END_BEARING1) guardZones["GZ 2"]->setEndBearing(val.toDouble());
-    else if(key == NON_VOLATILE_GZ_MODE) guardZones["GZ 1"]->setType(static_cast<GZType>(val.toInt()));
-    else if(key == NON_VOLATILE_GZ_MODE1) guardZones["GZ 2"]->setType(static_cast<GZType>(val.toInt()));
-    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ) guardZones["GZ 1"]->setShown(val.toBool());
-    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1) guardZones["GZ 2"]->setShown(val.toBool());
+    else if(key == NON_VOLATILE_GZ_START_RANGE) guardZones["GZ 1"]->SetInnerRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_START_RANGE1) guardZones["GZ 2"]->SetInnerRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_START_BEARING) guardZones["GZ 1"]->SetStartBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_START_BEARING1) guardZones["GZ 2"]->SetStartBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_END_RANGE) guardZones["GZ 1"]->SetOutterRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_END_RANGE1) guardZones["GZ 2"]->SetOutterRange(val.toInt());
+    else if(key == NON_VOLATILE_GZ_END_BEARING) guardZones["GZ 1"]->SetEndBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_END_BEARING1) guardZones["GZ 2"]->SetEndBearing(val.toDouble());
+    else if(key == NON_VOLATILE_GZ_MODE) guardZones["GZ 1"]->SetType(static_cast<GZType>(val.toInt()));
+    else if(key == NON_VOLATILE_GZ_MODE1) guardZones["GZ 2"]->SetType(static_cast<GZType>(val.toInt()));
+    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ) guardZones["GZ 1"]->SetShown(val.toBool());
+    else if(key == NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1) guardZones["GZ 2"]->SetShown(val.toBool());
 }
 
 void RadarEngine::RadarEngine::trigger_ReqTx()
@@ -201,7 +201,7 @@ void RadarEngine::RadarEngine::timerTimeout()
 
 void RadarEngine::RadarEngine::trigger_ReqControlChange(int ct, int val)
 {
-    radarTransmit->setControlValue(static_cast<ControlType>(ct),val);
+    radarTransmit->SetControlValue(static_cast<ControlType>(ct),val);
 }
 
 void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QByteArray data, int dataSize)
@@ -503,7 +503,7 @@ void RadarEngine::RadarEngine::trigger_stopRadar()
 
 void RadarEngine::RadarEngine::trigger_ReqRangeChange(int range)
 {
-    radarTransmit->setRange(range/2);
+    radarTransmit->SetRange(range/2);
 }
 
 void RadarEngine::RadarEngine::trigger_clearTrail()
@@ -516,7 +516,7 @@ void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
     ResetSpokes();
     radarReceive->ExitReq();
     sleep(1);
-    radarTransmit->setMulticastData(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
+    radarTransmit->SetMulticastData(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
                                     RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_PORT_CMD).toUInt());
     radarReceive->start();
 

@@ -20,9 +20,9 @@ public:
 
     static RadarTransmit* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
-    void setControlValue(ControlType controlType, int value);
-    void setMulticastData(QString addr,uint port);
-    void setRange(int meters);
+    void SetControlValue(ControlType controlType, int value);
+    void SetMulticastData(QString addr,uint port);
+    void SetRange(int meters);
 
     QUdpSocket socket;
 
@@ -40,8 +40,8 @@ protected:
 private:
     static RadarTransmit* instance;
 
-    QString _data;
-    uint _data_port;
+    QString m_data;
+    uint m_data_port;
     RadarEngine *m_re;
 };
 

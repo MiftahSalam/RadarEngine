@@ -12,7 +12,7 @@ GuardZone::GuardZone(QObject *parent, RadarEngine *re): QObject(parent), m_re(re
 {
     for (int angle = 0; angle < LINES_PER_ROTATION; angle++)
     {
-        arpa_update_time[angle] = 0;
+        arpaUpdateTime[angle] = 0;
     }
 
     /*
@@ -163,7 +163,7 @@ void GuardZone::trigger_configChange(const QString key, const QVariant val)
     }
 }
 */
-void GuardZone::setInnerRange(const int range)
+void GuardZone::SetInnerRange(const int range)
 {
     double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
 //    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
@@ -180,7 +180,7 @@ void GuardZone::setInnerRange(const int range)
     ResetBogeys();
 }
 
-void GuardZone::setOutterRange(const int range)
+void GuardZone::SetOutterRange(const int range)
 {
     double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
 //    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
@@ -197,7 +197,7 @@ void GuardZone::setOutterRange(const int range)
     ResetBogeys();
 }
 
-void GuardZone::setStartBearing(const double deg)
+void GuardZone::SetStartBearing(const double deg)
 {
 //    const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
@@ -206,7 +206,7 @@ void GuardZone::setStartBearing(const double deg)
     ResetBogeys();
 }
 
-void GuardZone::setEndBearing(const double deg)
+void GuardZone::SetEndBearing(const double deg)
 {
 //    const double hdt =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double hdt =  0.;
@@ -215,13 +215,13 @@ void GuardZone::setEndBearing(const double deg)
     ResetBogeys();
 }
 
-void GuardZone::setType(const GZType type)
+void GuardZone::SetType(const GZType type)
 {
     m_type = type;
     ResetBogeys();
 }
 
-void GuardZone::setShown(const bool show)
+void GuardZone::SetShown(const bool show)
 {
     m_show = show;
     ResetBogeys();
