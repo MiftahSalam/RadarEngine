@@ -19,6 +19,7 @@ struct RadarReport_01C4_18
     quint16 waking_time;             // 10 //waking up time
     quint16 field11;             // 11
 };
+
 struct RadarReport_02C4_99
 {     // length 99
     quint8 what;                    // 0   0x02
@@ -111,6 +112,7 @@ struct br4g_header
     quint8 u02[4];          // 4 bytes signed integer, always -1
     quint8 u03[4];          // 4 bytes signed integer, mostly -1 (0x80 in last byte) or 0xa0 in last byte
 };                       /* total size = 24 */
+
 struct radar_line
 {
     union
@@ -120,6 +122,7 @@ struct radar_line
     };
     quint8 data[RETURNS_PER_LINE];
 };
+
 struct radar_frame_pkt
 {
     quint8 frame_hdr[8];
@@ -147,7 +150,8 @@ RadarReceive::RadarReceive(QObject *parent, RadarEngine *engine) :
 RadarReceive::~RadarReceive()
 {
 }
-void RadarReceive::exitReq()
+
+void RadarReceive::ExitReq()
 {
     mutex.tryLock(1000);
     exit_req = true;
@@ -198,7 +202,6 @@ void RadarReceive::run()
             else
             {
                 qDebug()<<Q_FUNC_INFO<<"try bind data multicast access ";
-//                groupAddress = QHostAddress(data_thread);
                 if(socketDataReceive.bind(QHostAddress::AnyIPv4,data_port_thread, QUdpSocket::ShareAddress))
                 {
                     socketDataReceive.joinMulticastGroup(groupAddressData);
@@ -228,7 +231,6 @@ void RadarReceive::run()
         else
         {
             qDebug()<<Q_FUNC_INFO<<"try bind report multicast access ";
-//            groupAddress = QHostAddress(report_thread);
             if(socketReportReceive.bind(QHostAddress::AnyIPv4,reportport_thread, QUdpSocket::ShareAddress))
             {
                 socketReportReceive.joinMulticastGroup(groupAddressReport);
@@ -242,9 +244,11 @@ void RadarReceive::run()
         }
         msleep(5);
     }
+
     qDebug()<<Q_FUNC_INFO<<"radar receive terminated";
 
 }
+
 void RadarReceive::processReport(QByteArray data, int len)
 {
 //    qDebug()<<Q_FUNC_INFO<<data.toHex();
@@ -263,13 +267,13 @@ void RadarReceive::processReport(QByteArray data, int len)
                 switch (report[2])
                 {
                 case 0x01:
-                    emit updateReport(0,1,0);
+                    emit UpdateReport(0,1,0);
                     break;
                 case 0x02:
-                    emit updateReport(0,2,0);
+                    emit UpdateReport(0,2,0);
                     break;
                 case 0x03:
-                    emit updateReport(0,3,s->waking_time);
+                    emit UpdateReport(0,3,s->waking_time);
                     break;
                 default:
                     break;
@@ -287,34 +291,34 @@ void RadarReceive::processReport(QByteArray data, int len)
 //            qDebug()<<Q_FUNC_INFO<<"gain_mode"<<gain_mode<<s->gain;
             if (gain_mode == 1) //auto
             {
-                emit updateReport(1,0,0);
+                emit UpdateReport(1,0,0);
             }
             else
             {
                 s->gain = s->gain !=0 ? s->gain : 1;
-                emit updateReport(1,0,s->gain);
+                emit UpdateReport(1,0,s->gain);
             }
 
-            emit updateReport(1,1,s->rain);
+            emit UpdateReport(1,1,s->rain);
 
             //sea
             if (s->field13 == 0x01) //auto
-                emit updateReport(1,2,0);
+                emit UpdateReport(1,2,0);
             else
             {
                 quint32 sea = (s->sea[3] << 24) | (s->sea[2] << 16) | (s->sea[1] << 8) | (s->sea[0]);
                 sea = sea !=0 ? sea : 1;
-                emit updateReport(1,2,sea);
+                emit UpdateReport(1,2,sea);
             }
-            emit updateReport(1,3,s->target_boost);
-            emit updateReport(1,4,s->interference_rejection);
-            emit updateReport(1,5,s->target_expansion);
+            emit UpdateReport(1,3,s->target_boost);
+            emit UpdateReport(1,4,s->interference_rejection);
+            emit UpdateReport(1,5,s->target_expansion);
 
             //range
             quint32 range = (s->range[2] << 16) | (s->range[1] << 8) | (s->range[0]);
 //            range /= 16;
 //            qDebug()<<Q_FUNC_INFO<<"range hex"<<QString::number(range,16);
-            emit updateReport(1,6,range);
+            emit UpdateReport(1,6,range);
             break;
         }
 
@@ -324,11 +328,11 @@ void RadarReceive::processReport(QByteArray data, int len)
 
             //bearing_alignment
             quint32 bearing_alignment = (data->bearing_alignment[1] << 8) | (data->bearing_alignment[0]);
-            emit updateReport(3,0,bearing_alignment);
+            emit UpdateReport(3,0,bearing_alignment);
 
             //antenna_height
             quint32 antenna_height = (data->antenna_height[1] << 8) | (data->antenna_height[0]);
-            emit updateReport(3,1,antenna_height);
+            emit UpdateReport(3,1,antenna_height);
             break;
         }
         case (18 << 8) + 0x08:
@@ -336,20 +340,20 @@ void RadarReceive::processReport(QByteArray data, int len)
             // contains scan speed, noise rejection and target_separation and sidelobe suppression
             RadarReport_08C4_18 *s08 = (RadarReport_08C4_18 *)report;
 
-            emit updateReport(4,0,s08->scan_speed);
-            emit updateReport(4,1,s08->noise_rejection);
-            emit updateReport(4,2,s08->target_sep);
-            emit updateReport(4,4,s08->local_interference_rejection);
+            emit UpdateReport(4,0,s08->scan_speed);
+            emit UpdateReport(4,1,s08->noise_rejection);
+            emit UpdateReport(4,2,s08->target_sep);
+            emit UpdateReport(4,4,s08->local_interference_rejection);
 
             if (s08->sls_auto == 1)
             {
-                emit updateReport(4,3,0);
+                emit UpdateReport(4,3,0);
             }
             else
             {
                 s08->side_lobe_suppression = s08->side_lobe_suppression != 0 ?
                             s08->side_lobe_suppression : 1;
-                emit updateReport(4,3,s08->side_lobe_suppression);
+                emit UpdateReport(4,3,s08->side_lobe_suppression);
             }
             break;
         }
@@ -366,16 +370,10 @@ void RadarReceive::processReport(QByteArray data, int len)
 void RadarReceive::processFrame(QByteArray data, int len)
 {
     radar_frame_pkt *packet = (radar_frame_pkt *)data.data();
-
-    if (len < (int)sizeof(packet->frame_hdr)) {
-        return;
-    }
+    if (len < (int)sizeof(packet->frame_hdr)) return;
 
     int scanlines_in_packet = (len - sizeof(packet->frame_hdr)) / sizeof(radar_line);
-    if (scanlines_in_packet != 32)
-    {
-        qDebug()<<Q_FUNC_INFO<<"broken packet";
-    }
+    if (scanlines_in_packet != 32)         qDebug()<<Q_FUNC_INFO<<"broken packet";
 
     for (int scanline = 0; scanline < scanlines_in_packet; scanline++)
     {
@@ -387,17 +385,14 @@ void RadarReceive::processFrame(QByteArray data, int len)
             qDebug()<<Q_FUNC_INFO<<"strange header length "<<line->common.headerLen;
             continue;
         }
-        if (line->common.status != 0x02 && line->common.status != 0x12)
-        {
-            qDebug()<<Q_FUNC_INFO<<"strange header status "<<line->common.status;
-        }
+
+        if (line->common.status != 0x02 && line->common.status != 0x12) qDebug()<<Q_FUNC_INFO<<"strange header status "<<line->common.status;
 
         int angle_raw = 0;
-        angle_raw = (line->br4g.angle[1] << 8) | line->br4g.angle[0];
-
         const char *data_p = (const char *)line->data;
         QByteArray raw_data = QByteArray(data_p,512);
-        //      qDebug()<<Q_FUNC_INFO<<"sizeof data "<<sizeof(line->data)<<"size data array"<<raw_data.size();
+
+        angle_raw = (line->br4g.angle[1] << 8) | line->br4g.angle[0];
         emit ProcessRadarSpoke(angle_raw,raw_data,RETURNS_PER_LINE);
     }
 }

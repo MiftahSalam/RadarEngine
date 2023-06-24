@@ -20,13 +20,13 @@ public:
 
     static RadarReceive* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
-    void exitReq();
-    void setMulticastData(QString addr,uint port);
-    void setMulticastReport(QString addr,uint port);
+    void ExitReq();
+    void SetMulticastData(QString addr,uint port);
+    void SetMulticastReport(QString addr,uint port);
 
 signals:
     void ProcessRadarSpoke(int angle_raw, QByteArray data,int dataSize);
-    void updateReport(quint8 report_type,quint8 report_field,quint32 value);
+    void UpdateReport(quint8 report_type,quint8 report_field,quint32 value);
 
 protected:
     void run();

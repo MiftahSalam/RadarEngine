@@ -14,57 +14,58 @@ RadarArpa* RadarArpa::getInstance(QObject* parent, RadarEngine *engine)
 RadarArpa::RadarArpa(QObject *parent, RadarEngine *ri) :
     QObject(parent),m_ri(ri)
 {
-    m_number_of_targets = 0;
+    targetNumber = 0;
     for (int i = 0; i < MAX_NUMBER_OF_TARGETS; i++)
-        m_target[i] = nullptr;
+        targets[i] = nullptr;
 }
 
 void RadarArpa::RefreshArpaTargets()
 {
     //    qDebug()<<Q_FUNC_INFO<<"range_meters"<<range_meters;
 
-    for (int i = 0; i < m_number_of_targets; i++)
+    for (int i = 0; i < targetNumber; i++)
     {
-        if (m_target[i])
+        if (targets[i])
         {
-//            m_target[i]->m_range = range_meters;
-            if (m_target[i]->m_status == LOST)
+            //            targets[i]->m_range = range_meters;
+            if (targets[i]->m_status == LOST)
             {
                 qDebug()<<Q_FUNC_INFO<<"lost target "<<i;
                 // we keep the lost target for later use, destruction and construction is expensive
-                ARPATarget* lost = m_target[i];
+                ARPATarget* lost = targets[i];
                 int len = sizeof(ARPATarget*);
                 // move rest of larget list up to keep them in sequence
-                memmove(&m_target[i], &m_target[i] + 1, static_cast<size_t>((m_number_of_targets - i) * len));
-                m_number_of_targets--;
+                memmove(&targets[i], &targets[i] + 1, static_cast<size_t>((targetNumber - i) * len));
+                targetNumber--;
                 // set the lost target at the last position
-                m_target[m_number_of_targets] = lost;
+                targets[targetNumber] = lost;
             }
         }
     }
 
-    int target_to_delete = -1;
     // find a target with status FOR_DELETION if it is there
-    for (int i = 0; i < m_number_of_targets; i++)
+    int target_to_delete = -1;
+    for (int i = 0; i < targetNumber; i++)
     {
-        if (!m_target[i]) continue;
-        if (m_target[i]->m_status == FOR_DELETION)
+        if (!targets[i]) continue;
+        if (targets[i]->m_status == FOR_DELETION)
         {
             target_to_delete = i;
         }
     }
+
     if (target_to_delete != -1)
     {
         // delete the target that is closest to the target with status FOR_DELETION
-        Position* deletePosition = &m_target[target_to_delete]->position;
+        Position* deletePosition = &targets[target_to_delete]->position;
         double min_dist = 1000;
         int del_target = -1;
-        for (int i = 0; i < m_number_of_targets; i++)
+        for (int i = 0; i < targetNumber; i++)
         {
-            if (!m_target[i]) continue;
-            if (i == target_to_delete || m_target[i]->m_status == LOST) continue;
-            double dif_lat = deletePosition->lat - m_target[i]->position.lat;
-            double dif_lon = (deletePosition->lon - m_target[i]->position.lon) * cos(deg2rad(deletePosition->lat));
+            if (!targets[i]) continue;
+            if (i == target_to_delete || targets[i]->m_status == LOST) continue;
+            double dif_lat = deletePosition->lat - targets[i]->position.lat;
+            double dif_lon = (deletePosition->lon - targets[i]->position.lon) * cos(deg2rad(deletePosition->lat));
             double dist2 = dif_lat * dif_lat + dif_lon * dif_lon;
             if (dist2 < min_dist)
             {
@@ -72,32 +73,33 @@ void RadarArpa::RefreshArpaTargets()
                 del_target = i;
             }
         }
+
         // del_target is the index of the target closest to target with index target_to_delete
         if (del_target != -1)
         {
             qDebug()<<Q_FUNC_INFO<<"set lost closest";
-            m_target[del_target]->SetStatusLost();
+            targets[del_target]->SetStatusLost();
         }
-        m_target[target_to_delete]->SetStatusLost();
+        targets[target_to_delete]->SetStatusLost();
     }
-    //    qDebug()<<Q_FUNC_INFO<<"target to delete "<<target_to_delete<<"target number"<<m_number_of_targets;
+    //    qDebug()<<Q_FUNC_INFO<<"target to delete "<<target_to_delete<<"target number"<<targetNumber;
 
     // main target refresh loop
 
     // pass 1 of target refresh
     int dist = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt();
-    for (int i = 0; i < m_number_of_targets; i++)
+    for (int i = 0; i < targetNumber; i++)
     {
-        if (!m_target[i])
+        if (!targets[i])
         {
             qDebug()<<Q_FUNC_INFO<<"BR24radar_pi:  error target non existent i="<<i;
             continue;
         }
-        m_target[i]->m_pass_nr = PASS1;
-        if (m_target[i]->m_pass1_result == NOT_FOUND_IN_PASS1) continue;
-        m_target[i]->RefreshTarget(dist);
+        targets[i]->m_pass_nr = PASS1;
+        if (targets[i]->m_pass1_result == NOT_FOUND_IN_PASS1) continue;
+        targets[i]->RefreshTarget(dist);
         /*
-        if (m_target[i]->m_pass1_result == NOT_FOUND_IN_PASS1)
+        if (targets[i]->m_pass1_result == NOT_FOUND_IN_PASS1)
         {
         }
         */
@@ -105,28 +107,29 @@ void RadarArpa::RefreshArpaTargets()
 
     // pass 2 of target refresh
     dist = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2).toInt();
-    for (int i = 0; i < m_number_of_targets; i++)
+    for (int i = 0; i < targetNumber; i++)
     {
-        if (!m_target[i])
+        if (!targets[i])
         {
             qDebug()<<Q_FUNC_INFO<<" error target non existent i="<<i;
             continue;
         }
-        if (m_target[i]->m_pass1_result == UNKNOWN) continue;
-        m_target[i]->m_pass_nr = PASS2;
-        m_target[i]->RefreshTarget(dist);
-    }
-    for (int i = 0; i < m_number_of_targets; i++)
-    {
-        if (!m_target[i])
-        {
-            qDebug()<<Q_FUNC_INFO<<" error target non existent i="<<i;
-            continue;
-        }
+        if (targets[i]->m_pass1_result == UNKNOWN) continue;
+        targets[i]->m_pass_nr = PASS2;
+        targets[i]->RefreshTarget(dist);
     }
 
+    for (int i = 0; i < targetNumber; i++)
+    {
+        if (!targets[i])
+        {
+            qDebug()<<Q_FUNC_INFO<<" error target non existent i="<<i;
+            continue;
+        }
+    }
 }
-bool RadarArpa::Pix(int ang, int rad)
+
+bool RadarArpa::pix(int ang, int rad)
 {
     if (rad <= 1 || rad >= RETURNS_PER_LINE - 1) //  avoid range ring
         return false;
@@ -147,7 +150,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
     Polar start;
     start.angle = ang;
     start.r = rad;
-    if (!Pix(start.angle, start.r))
+    if (!pix(start.angle, start.r))
         return false;
 
     Polar current = start;  // the 4 possible translations to move from a point on the contour to the next
@@ -185,7 +188,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
         index = i;
         aa = current.angle + transl[index].angle;
         rr = current.r + transl[index].r;
-        succes = !Pix(aa, rr);
+        succes = !pix(aa, rr);
         if (succes) break;
     }
     if (!succes)
@@ -193,6 +196,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
         qDebug()<<Q_FUNC_INFO<<" Error starting point not on contour";
         return false;
     }
+
     index += 1;  // determines starting direction
     if (index > 3) index -= 4;
     while (current.r != start.r || current.angle != start.angle || count == 0)
@@ -204,7 +208,7 @@ bool RadarArpa::MultiPix(int ang, int rad)
             if (index > 3) index -= 4;
             aa = current.angle + transl[index].angle;
             rr = current.r + transl[index].r;
-            succes = Pix(aa, rr);
+            succes = pix(aa, rr);
             if (succes)   // next point found
                 break;
 
@@ -247,36 +251,40 @@ bool RadarArpa::MultiPix(int ang, int rad)
     }
     return false;
 }
+
 void RadarArpa::DeleteAllTargets()
 {
-    for (int i = 0; i < m_number_of_targets; i++)
+    for (int i = 0; i < targetNumber; i++)
     {
-        if (!m_target[i]) continue;
-        m_target[i]->SetStatusLost();
+        if (!targets[i]) continue;
+        targets[i]->SetStatusLost();
     }
 }
+
 void RadarArpa::AcquireNewMARPATarget(Position p)
 {
     //    qDebug()<<Q_FUNC_INFO<<p.lat<<p.lon;
 
-    AcquireOrDeleteMarpaTarget(p, ACQUIRE0);
+    acquireOrDeleteMarpaTarget(p, ACQUIRE0);
 }
-void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
+
+void RadarArpa::acquireOrDeleteMarpaTarget(Position target_pos, int status)
 {
-        qDebug()<<Q_FUNC_INFO<<"radar id"<<target_pos.lat<<target_pos.lon<<m_number_of_targets;
+    qDebug()<<Q_FUNC_INFO<<"radar id"<<target_pos.lat<<target_pos.lon<<targetNumber;
+
     int i_target;
-    if (m_number_of_targets < MAX_NUMBER_OF_TARGETS - 1 ||
-            (m_number_of_targets == MAX_NUMBER_OF_TARGETS - 1 && status == FOR_DELETION))
+    if (targetNumber < MAX_NUMBER_OF_TARGETS - 1 ||
+            (targetNumber == MAX_NUMBER_OF_TARGETS - 1 && status == FOR_DELETION))
     {
-        if (m_target[m_number_of_targets] == nullptr)
+        if (targets[targetNumber] == nullptr)
         {
-            m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
-            connect(m_target[m_number_of_targets],&ARPATarget::Signal_LostTarget,
-                    this,&RadarArpa::signal_LostTarget);
+            targets[targetNumber] = new ARPATarget(this, m_ri);
+            connect(targets[targetNumber],&ARPATarget::Signal_LostTarget,
+                    this,&RadarArpa::Signal_LostTarget);
             //            qDebug()<<Q_FUNC_INFO<<"create new ARPAtarget";
         }
-        i_target = m_number_of_targets;
-        m_number_of_targets++;
+        i_target = targetNumber;
+        targetNumber++;
     }
     else
     {
@@ -284,7 +292,7 @@ void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
         return;
     }
 
-    ARPATarget* target = m_target[i_target];
+    ARPATarget* target = targets[i_target];
     target->position = target_pos;  // Expected position
     target->position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
     target->position.dlat_dt = 0.;
@@ -308,9 +316,11 @@ void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
         target->m_kalman = new KalmanFilter(this);
 
     target->m_automatic = false;
+
     return;
 
 }
+
 int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
 {
     // acquires new target from mouse click position
@@ -321,33 +331,34 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     Position own_pos;
     Position target_pos;
     double range_meters = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
-//    const quint8 unit = static_cast<quint8>(getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+    //    const quint8 unit = static_cast<quint8>(getInstance("")->getConfig(RadarConfig::NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
-//    switch (unit) {
-//    case 1:
-//        range_meters *= KM_TO_NM;
-//        break;
-//    default:
-//        break;
-//    }
+    //    switch (unit) {
+    //    case 1:
+    //        range_meters *= KM_TO_NM;
+    //        break;
+    //    default:
+    //        break;
+    //    }
 
     own_pos.lat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
     own_pos.lon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
     target_pos = Polar2Pos(pol, own_pos, range_meters);
     // make new target or re-use an existing one with status == lost
     qDebug()<<Q_FUNC_INFO<<"range_meters"<<range_meters;
+
     int i;
-    if (m_number_of_targets < MAX_NUMBER_OF_TARGETS - 1 || (m_number_of_targets == MAX_NUMBER_OF_TARGETS - 1 && status == -2))
+    if (targetNumber < MAX_NUMBER_OF_TARGETS - 1 || (targetNumber == MAX_NUMBER_OF_TARGETS - 1 && status == -2))
     {
-        if (!m_target[m_number_of_targets])
+        if (!targets[targetNumber])
         {
-            m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
-            connect(m_target[m_number_of_targets],&ARPATarget::Signal_LostTarget,
-                    this,&RadarArpa::signal_LostTarget);
+            targets[targetNumber] = new ARPATarget(this, m_ri);
+            connect(targets[targetNumber],&ARPATarget::Signal_LostTarget,
+                    this,&RadarArpa::Signal_LostTarget);
         }
 
-        i = m_number_of_targets;
-        m_number_of_targets++;
+        i = targetNumber;
+        targetNumber++;
     }
     else
     {
@@ -355,7 +366,7 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
         return -1;
     }
 
-    ARPATarget* target = m_target[i];
+    ARPATarget* target = targets[i];
 
     target->position = target_pos;  // Expected position
     target->position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
@@ -380,8 +391,9 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
     target->m_automatic = true;
     target->targetId = 0;
     target->RefreshTarget(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt());
+
     return i;
 }
 
-void RadarArpa::DeleteTarget(Position target_pos) { AcquireOrDeleteMarpaTarget(target_pos, FOR_DELETION); }
+void RadarArpa::DeleteTarget(Position target_pos) { acquireOrDeleteMarpaTarget(target_pos, FOR_DELETION); }
 

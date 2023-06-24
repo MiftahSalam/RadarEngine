@@ -19,8 +19,8 @@ public:
 
     static RadarArpa* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
-    int m_number_of_targets/*,range_meters*/;
-    ARPATarget *m_target[MAX_NUMBER_OF_TARGETS];
+    int targetNumber;
+    ARPATarget *targets[MAX_NUMBER_OF_TARGETS];
 
     bool MultiPix(int ang, int rad);
     void AcquireNewMARPATarget(Position p);
@@ -34,7 +34,7 @@ public:
     }
 
 signals:
-    void signal_LostTarget(int id);
+    void Signal_LostTarget(int id);
 
 protected:
     RadarArpa(QObject *parent = nullptr, RadarEngine *ri=nullptr);
@@ -42,10 +42,10 @@ protected:
 
 private:
     static RadarArpa* instance;
-
-    bool Pix(int ang, int rad);
-    void AcquireOrDeleteMarpaTarget(Position target_pos, int status);
     RadarEngine *m_ri;
+
+    bool pix(int ang, int rad);
+    void acquireOrDeleteMarpaTarget(Position target_pos, int status);
 };
 
 }

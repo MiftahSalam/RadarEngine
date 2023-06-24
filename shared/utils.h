@@ -4,6 +4,7 @@
 #include "shared/global.h"
 
 namespace RadarEngine {
+
 class Polar {
  public:
   int angle;
@@ -22,6 +23,7 @@ public:
     double speed_kn;
     double sd_speed_kn;  // standard deviation of the speed in knots
 };
+
 }
 
 RadarEngine::Position Polar2Pos(RadarEngine::Polar pol, RadarEngine::Position own_ship, double range);

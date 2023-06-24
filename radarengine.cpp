@@ -57,7 +57,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
 
     setupGZ();
 
-    connect(radarReceive,&RadarReceive::updateReport,
+    connect(radarReceive,&RadarReceive::UpdateReport,
             this,&RadarEngine::receiveThread_Report);
     connect(radarReceive,&RadarReceive::ProcessRadarSpoke,
             this,&RadarEngine::radarReceive_ProcessRadarSpoke);
@@ -130,7 +130,7 @@ void RadarEngine::RadarEngine::trigger_ReqStby()
 
 RadarEngine::RadarEngine::~RadarEngine()
 {
-    radarReceive->exitReq();
+    radarReceive->ExitReq();
 }
 
 void RadarEngine::RadarEngine::timerTimeout()
@@ -498,7 +498,7 @@ void RadarEngine::RadarEngine::ComputeTargetTrails()
 
 void RadarEngine::RadarEngine::trigger_stopRadar()
 {
-    radarReceive->exitReq();
+    radarReceive->ExitReq();
 }
 
 void RadarEngine::RadarEngine::trigger_ReqRangeChange(int range)
@@ -514,7 +514,7 @@ void RadarEngine::RadarEngine::trigger_clearTrail()
 void RadarEngine::RadarEngine::trigger_ReqRadarSetting()
 {
     ResetSpokes();
-    radarReceive->exitReq();
+    radarReceive->ExitReq();
     sleep(1);
     radarTransmit->setMulticastData(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_IP_CMD).toString(),
                                     RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_NET_PORT_CMD).toUInt());
