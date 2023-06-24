@@ -1,8 +1,8 @@
 #ifndef RADARENGINE_H
 #define RADARENGINE_H
 
-#include <radarconfig.h>
-#include "radarengine_global.h"
+#include "radarconfig.h"
+#include "shared/constants.h"
 
 #include "guardzone.h"
 #include "radarreceive.h"

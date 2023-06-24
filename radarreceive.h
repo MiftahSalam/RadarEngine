@@ -5,8 +5,7 @@
 #include <QThread>
 #include <QMutex>
 
-#include "radarengine_global.h"
-//#include "radarengine.h"
+#include "shared/constants.h"
 
 namespace RadarEngine {
 

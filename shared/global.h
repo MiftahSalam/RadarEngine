@@ -10,7 +10,7 @@
 
 #include <math.h>
 
-#include <radarconfig_global.h>
+#include "constants.h"
 
 namespace RadarEngine {
 
@@ -52,10 +52,6 @@ enum BlobColour {
     BLOB_INTERMEDIATE, //34
     BLOB_STRONG //35
 };
-
-#define BLOB_HISTORY_MAX BLOB_HISTORY_31 //32
-#define BLOB_COLOURS (BLOB_STRONG + 1) //36
-#define BLOB_HISTORY_COLOURS (BLOB_HISTORY_MAX - BLOB_NONE) //32
 
 typedef enum ControlType
 {
@@ -127,27 +123,6 @@ struct RadarRange {
   uint actual_meters; //based on range feedback
   const char *name;
 };
-
-static const QList<int> distanceList = QList<int>()<<40000 //0
-                                                <<30000 //1
-                                               <<20000 //2
-                                              <<10000 //3
-                                             <<5000 //4
-                                            <<2000 //5
-                                           <<1500 //6
-                                          <<1000 //7
-                                         <<500 //8
-                                           ;
-static const QList<int> distanceListNautical = QList<int>()<<25000/KM_TO_NM //0
-                                                <<20000/KM_TO_NM //1
-                                               <<15000/KM_TO_NM //2
-                                              <<10000/KM_TO_NM //3
-                                             <<5000/KM_TO_NM //4
-                                            <<2000/KM_TO_NM //5
-                                           <<1500/KM_TO_NM //6
-                                          <<1000/KM_TO_NM //7
-                                         <<500/KM_TO_NM //8
-                                           ;
 
 }
 

@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-#include "radarengine_global.h"
+#include "shared/constants.h"
 #include "kalmanfilter.h"
 
 //#define SCAN_MARGIN (750)

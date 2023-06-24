@@ -1,6 +1,6 @@
 #include "kalmanfilter.h"
-#include "radarengine_global.h"
-#include <radarconfig.h>
+#include "shared/constants.h"
+#include "radarconfig.h"
 
 static Matrix<double, 4, 2> ZeroMatrix42;
 static Matrix<double, 2, 4> ZeroMatrix24;

@@ -3,8 +3,7 @@
 
 #include <QObject>
 
-//#include "radarengine.h"
-#include "radarengine_global.h"
+#include "shared/constants.h"
 #include "arpatarget.h"
 
 namespace RadarEngine {

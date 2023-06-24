@@ -1,5 +1,7 @@
 HEADERS_BASE += \
-                $$PWD/radarengine_global.h \
+                $$PWD/shared/global.h \
+                $$PWD/shared/constants.h \
+                $$PWD/radarconfig.h \
                 $$PWD/radarengine.h \
                 $$PWD/radarreceive.h \
                 $$PWD/radartransmit.h \
@@ -10,13 +12,14 @@ HEADERS_BASE += \
                 $$PWD/radararpa.h
 
 SOURCES += \
-           $$PWD/radarengine.cpp \ 
-    $$PWD/radarreceive.cpp \
-    $$PWD/radartransmit.cpp \
-    $$PWD/radardraw.cpp \
-    $$PWD/arpatarget.cpp \
-    $$PWD/kalmanfilter.cpp \
-    $$PWD/guardzone.cpp \
-    $$PWD/radararpa.cpp
+           $$PWD/radarconfig.cpp \
+           $$PWD/radarengine.cpp \
+           $$PWD/radarreceive.cpp \
+           $$PWD/radartransmit.cpp \
+           $$PWD/radardraw.cpp \
+           $$PWD/arpatarget.cpp \
+           $$PWD/kalmanfilter.cpp \
+           $$PWD/guardzone.cpp \
+           $$PWD/radararpa.cpp
 
 HEADERS += $$HEADERS_BASE \
