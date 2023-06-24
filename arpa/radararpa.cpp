@@ -56,15 +56,15 @@ void RadarArpa::RefreshArpaTargets()
     if (target_to_delete != -1)
     {
         // delete the target that is closest to the target with status FOR_DELETION
-        Position* deletePosition = &m_target[target_to_delete]->m_position;
+        Position* deletePosition = &m_target[target_to_delete]->position;
         double min_dist = 1000;
         int del_target = -1;
         for (int i = 0; i < m_number_of_targets; i++)
         {
             if (!m_target[i]) continue;
             if (i == target_to_delete || m_target[i]->m_status == LOST) continue;
-            double dif_lat = deletePosition->lat - m_target[i]->m_position.lat;
-            double dif_lon = (deletePosition->lon - m_target[i]->m_position.lon) * cos(deg2rad(deletePosition->lat));
+            double dif_lat = deletePosition->lat - m_target[i]->position.lat;
+            double dif_lon = (deletePosition->lon - m_target[i]->position.lon) * cos(deg2rad(deletePosition->lat));
             double dist2 = dif_lat * dif_lat + dif_lon * dif_lon;
             if (dist2 < min_dist)
             {
@@ -271,7 +271,7 @@ void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
         if (m_target[m_number_of_targets] == nullptr)
         {
             m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
-            connect(m_target[m_number_of_targets],&ARPATarget::signal_LostTarget,
+            connect(m_target[m_number_of_targets],&ARPATarget::Signal_LostTarget,
                     this,&RadarArpa::signal_LostTarget);
             //            qDebug()<<Q_FUNC_INFO<<"create new ARPAtarget";
         }
@@ -285,24 +285,24 @@ void RadarArpa::AcquireOrDeleteMarpaTarget(Position target_pos, int status)
     }
 
     ARPATarget* target = m_target[i_target];
-    target->m_position = target_pos;  // Expected position
-    target->m_position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
-    target->m_position.dlat_dt = 0.;
-    target->m_position.dlon_dt = 0.;
+    target->position = target_pos;  // Expected position
+    target->position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
+    target->position.dlat_dt = 0.;
+    target->position.dlon_dt = 0.;
     target->m_status = status;
     qDebug()<<Q_FUNC_INFO<<"target new status"<<status;
-    qDebug()<<Q_FUNC_INFO<<"target lat"<<target->m_position.lat;
-    qDebug()<<Q_FUNC_INFO<<"target lon"<<target->m_position.lon;
+    qDebug()<<Q_FUNC_INFO<<"target lat"<<target->position.lat;
+    qDebug()<<Q_FUNC_INFO<<"target lon"<<target->position.lon;
 
-    target->m_max_angle.angle = 0;
-    target->m_min_angle.angle = 0;
-    target->m_max_r.r = 0;
-    target->m_min_r.r = 0;
-    target->m_max_r_future.angle = 0;
-    target->m_min_r_future.angle = 0;
-    target->m_max_r_future.r = 0;
-    target->m_min_r_future.r = 0;
-    target->future_first = true;
+    target->maxAngle.angle = 0;
+    target->minAngle.angle = 0;
+    target->maxR.r = 0;
+    target->minR.r = 0;
+    target->maxRFuture.angle = 0;
+    target->minRFuture.angle = 0;
+    target->maxRFuture.r = 0;
+    target->minRFuture.r = 0;
+    target->futureFirst = true;
 
     if (!target->m_kalman)
         target->m_kalman = new KalmanFilter(this);
@@ -342,7 +342,7 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
         if (!m_target[m_number_of_targets])
         {
             m_target[m_number_of_targets] = new ARPATarget(this, m_ri);
-            connect(m_target[m_number_of_targets],&ARPATarget::signal_LostTarget,
+            connect(m_target[m_number_of_targets],&ARPATarget::Signal_LostTarget,
                     this,&RadarArpa::signal_LostTarget);
         }
 
@@ -357,28 +357,28 @@ int RadarArpa::AcquireNewARPATarget(Polar pol, int status)
 
     ARPATarget* target = m_target[i];
 
-    target->m_position = target_pos;  // Expected position
-    target->m_position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
-    target->m_position.dlat_dt = 0.;
-    target->m_position.dlon_dt = 0.;
-    target->m_position.sd_speed_kn = 0.;
+    target->position = target_pos;  // Expected position
+    target->position.time = static_cast<quint64>(QDateTime::currentMSecsSinceEpoch());
+    target->position.dlat_dt = 0.;
+    target->position.dlon_dt = 0.;
+    target->position.sd_speed_kn = 0.;
     target->m_status = status;
-    target->m_max_angle.angle = 0;
-    target->m_min_angle.angle = 0;
-    target->m_max_r.r = 0;
-    target->m_min_r.r = 0;
-    target->m_max_r_future.angle = 0;
-    target->m_min_r_future.angle = 0;
-    target->m_max_r_future.r = 0;
-    target->m_min_r_future.r = 0;
-    target->future_first = true;
+    target->maxAngle.angle = 0;
+    target->minAngle.angle = 0;
+    target->maxR.r = 0;
+    target->minR.r = 0;
+    target->maxRFuture.angle = 0;
+    target->minRFuture.angle = 0;
+    target->maxRFuture.r = 0;
+    target->minRFuture.r = 0;
+    target->futureFirst = true;
 
     if (!target->m_kalman)
         target->m_kalman = new KalmanFilter();
 
     target->m_check_for_duplicate = false;
     target->m_automatic = true;
-    target->m_target_id = 0;
+    target->targetId = 0;
     target->RefreshTarget(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1).toInt());
     return i;
 }

@@ -58,29 +58,29 @@ public:
     ~ARPATarget() override;
     void RefreshTarget(int dist);
     void SetStatusLost();
-    target_status getStatus() { return m_status; }
-    QPointF blobPixelPosition();
+    target_status GetStatus() { return m_status; }
+    QPointF BlobPixelPosition();
 
-    int m_target_id/*, m_range*/;
-    Polar m_max_angle, m_min_angle, m_max_r, m_min_r;
-    Polar m_max_angle_future, m_min_angle_future, m_max_r_future, m_min_r_future;
-    bool future_first;
-    double m_speed_kn;
-    double m_course;
-    int m_stationary;
-    Position m_position;   // holds actual position of target
+    int targetId/*, m_range*/;
+    Polar maxAngle, minAngle, maxR, minR;
+    Polar maxAngleFuture, minAngleFuture, maxRFuture, minRFuture;
+    bool futureFirst;
+    double speedKts;
+    double course;
+    int stationary;
+    Position position;
 
 signals:
-    void signal_LostTarget(int id);
+    void Signal_LostTarget(int id);
 
 private:
-    bool GetTarget(Polar* pol, int dist1);
-    void ResetPixels();
-    bool FindContourFromInside(Polar* pol);
-    bool FindNearestContour(Polar* pol, int dist);
-    bool MultiPix(int ang, int rad);
-    bool Pix(int ang, int rad);
-    int GetContour(Polar* p);
+    bool getTarget(Polar* pol, int dist1);
+    void resetPixels();
+    bool findContourFromInside(Polar* pol);
+    bool findNearestContour(Polar* pol, int dist);
+    bool multiPix(int ang, int rad);
+    bool pix(int ang, int rad);
+    int getContour(Polar* p);
 
     KalmanFilter* m_kalman;
     RadarEngine *m_ri;
