@@ -15,7 +15,10 @@ class RadarTransmit : public QObject
 {
     Q_OBJECT
 public:
-    explicit RadarTransmit(QObject *parent = 0, RadarEngine *re = nullptr);
+    RadarTransmit(RadarTransmit& other) = delete;
+    void operator=(const RadarTransmit&) = delete;
+
+    static RadarTransmit* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
     void setControlValue(ControlType controlType, int value);
     void setMulticastData(QString addr,uint port);
@@ -30,7 +33,13 @@ public slots:
     void RadarStby();
     void RadarStayAlive();
 
+protected:
+    RadarTransmit(QObject *parent = 0, RadarEngine *engine = nullptr);
+    ~RadarTransmit();
+
 private:
+    static RadarTransmit* instance;
+
     QString _data;
     uint _data_port;
     RadarEngine *m_re;

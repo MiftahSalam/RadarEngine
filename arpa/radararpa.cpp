@@ -3,6 +3,14 @@
 
 using namespace RadarEngine;
 
+RadarArpa* RadarArpa::instance{nullptr};
+
+RadarArpa* RadarArpa::getInstance(QObject* parent, RadarEngine *engine)
+{
+    if(instance == nullptr) instance = new RadarArpa(parent, engine);
+    return  instance;
+}
+
 RadarArpa::RadarArpa(QObject *parent, RadarEngine *ri) :
     QObject(parent),m_ri(ri)
 {

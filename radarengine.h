@@ -3,7 +3,6 @@
 
 #include "radarconfig.h"
 #include "shared/constants.h"
-
 #include "guardzone.h"
 #include "stream/radarreceive.h"
 #include "stream/radartransmit.h"
@@ -114,6 +113,7 @@ private:
     void ClearTrails();
     void ComputeTargetTrails();
     void checkRange(uint new_range);
+    void setupGZ();
 };
 
 }

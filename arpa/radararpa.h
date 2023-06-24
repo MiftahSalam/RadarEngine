@@ -14,7 +14,10 @@ class RadarArpa : public QObject
 {
     Q_OBJECT
 public:
-    explicit RadarArpa(QObject *parent = nullptr, RadarEngine *ri=nullptr);
+    RadarArpa(RadarArpa& other) = delete;
+    void operator=(const RadarArpa&) = delete;
+
+    static RadarArpa* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
     int m_number_of_targets/*,range_meters*/;
     ARPATarget *m_target[MAX_NUMBER_OF_TARGETS];
@@ -33,7 +36,13 @@ public:
 signals:
     void signal_LostTarget(int id);
 
+protected:
+    RadarArpa(QObject *parent = nullptr, RadarEngine *ri=nullptr);
+    ~RadarArpa();
+
 private:
+    static RadarArpa* instance;
+
     bool Pix(int ang, int rad);
     void AcquireOrDeleteMarpaTarget(Position target_pos, int status);
     RadarEngine *m_ri;

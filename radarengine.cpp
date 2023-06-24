@@ -22,6 +22,7 @@ enum {
 };
 
 RadarEngine::RadarEngine* RadarEngine::RadarEngine::instance{nullptr};
+
 RadarEngine::RadarEngine* RadarEngine::RadarEngine::getInstance(QObject* parent)
 {
     if(instance == nullptr) instance = new RadarEngine(parent);
@@ -47,11 +48,32 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timerTimeout()));
 
-    radarReceive = new RadarReceive(this,this);
-    radarTransmit = new RadarTransmit(this,this);
+    radarReceive = RadarReceive::getInstance(this,this);
+    radarTransmit = RadarTransmit::getInstance(this,this);
     radarDraw = RadarDraw::make_Draw(this,0);
-    radarArpa = new RadarArpa(this,this);
+    radarArpa = RadarArpa::getInstance(this,this);
 
+    RadarConfig *instance = RadarConfig::getInstance("");
+
+    setupGZ();
+
+    connect(radarReceive,&RadarReceive::updateReport,
+            this,&RadarEngine::receiveThread_Report);
+    connect(radarReceive,&RadarReceive::ProcessRadarSpoke,
+            this,&RadarEngine::radarReceive_ProcessRadarSpoke);
+
+//    connect(this,SIGNAL(signal_sendStby()),radarTransmit,SLOT(RadarStby()));
+//    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
+    connect(this,SIGNAL(signal_stay_alive()),radarTransmit,SLOT(RadarStayAlive()));
+    connect(instance,&RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
+//    connect(instance,&RadarConfig::configValueChange,guardZone,&GuardZone::trigger_configChange);
+
+    trigger_ReqRadarSetting();
+    timer->start(1000);
+}
+
+void RadarEngine::RadarEngine::setupGZ()
+{
     RadarConfig *instance = RadarConfig::getInstance("");
 
     GuardZone *guardZone = new GuardZone(this,this);
@@ -73,20 +95,6 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     guardZone->setEndBearing(instance->getConfig(NON_VOLATILE_GZ_END_BEARING1).toDouble());
 
     guardZones.insert("GZ 2",guardZone);
-
-    connect(radarReceive,&RadarReceive::updateReport,
-            this,&RadarEngine::receiveThread_Report);
-    connect(radarReceive,&RadarReceive::ProcessRadarSpoke,
-            this,&RadarEngine::radarReceive_ProcessRadarSpoke);
-
-//    connect(this,SIGNAL(signal_sendStby()),radarTransmit,SLOT(RadarStby()));
-//    connect(this,SIGNAL(signal_sendTx()),this,SLOT(trigger_ReqTx()));
-    connect(this,SIGNAL(signal_stay_alive()),radarTransmit,SLOT(RadarStayAlive()));
-    connect(instance,&RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
-//    connect(instance,&RadarConfig::configValueChange,guardZone,&GuardZone::trigger_configChange);
-
-    trigger_ReqRadarSetting();
-    timer->start(1000);
 }
 
 void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
@@ -113,11 +121,13 @@ void RadarEngine::RadarEngine::trigger_ReqTx()
 {
     radarTransmit->RadarTx();
 }
+
 void RadarEngine::RadarEngine::trigger_ReqStby()
 {
     radarTransmit->RadarStby();
     RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,RADAR_STANDBY);
 }
+
 RadarEngine::RadarEngine::~RadarEngine()
 {
     radarReceive->exitReq();
@@ -130,8 +140,6 @@ void RadarEngine::RadarEngine::timerTimeout()
     const RadarState state_radar = static_cast<RadarState>(RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_STATUS).toInt());
     const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
     const int trail = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_TIME).toInt();
-
-//    qDebug()<<Q_FUNC_INFO<<"state_radar"<<(int)state_radar;
 
     if(state_radar == RADAR_TRANSMIT && TIMED_OUT(now,stay_alive_timeout))
     {
@@ -162,7 +170,6 @@ void RadarEngine::RadarEngine::timerTimeout()
                 guardZones.value(key)->ResetBogeys();
             }
         }
-//        emit signal_state_change();
     }
 
     const int preset_color = RadarConfig::getInstance("")->getConfig(VOLATILE_DISPLAY_PRESET_COLOR).toInt();
@@ -205,7 +212,6 @@ void RadarEngine::RadarEngine::radarReceive_ProcessRadarSpoke(int angle_raw, QBy
     radar_timeout = now + WATCHDOG_TIMEOUT;
     data_timeout = now + DATA_TIMEOUT;
 //    state_radar = RADAR_TRANSMIT; //need for offline mode
-
 
     RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_STATUS,RADAR_TRANSMIT);
 
@@ -345,10 +351,12 @@ void RadarEngine::RadarEngine::ZoomTrails(float zoom_factor)
     }
     memcpy(&m_trails.relative_trails[0][0], &m_trails.copy_of_relative_trails[0][0], sizeof(m_trails.copy_of_relative_trails));
 }
+
 void RadarEngine::RadarEngine::ClearTrails()
 {
     memset(&m_trails, 0, sizeof(m_trails));
 }
+
 void RadarEngine::RadarEngine::ComputeColourMap()
 {
     for (int i = 0; i <= UINT8_MAX; i++)

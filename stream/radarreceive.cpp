@@ -126,6 +126,14 @@ struct radar_frame_pkt
     radar_line line[120];  //  scan lines, or spokes
 };
 
+RadarReceive* RadarReceive::instance{nullptr};
+
+RadarReceive* RadarReceive::getInstance(QObject* parent, RadarEngine *engine)
+{
+    if(instance == nullptr) instance = new RadarReceive(parent, engine);
+    return  instance;
+}
+
 RadarReceive::RadarReceive(QObject *parent, RadarEngine *engine) :
     QThread(parent),m_engine(engine)
 {

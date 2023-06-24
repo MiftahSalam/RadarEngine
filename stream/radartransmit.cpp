@@ -2,11 +2,20 @@
 
 using namespace RadarEngine;
 
+RadarTransmit* RadarTransmit::instance{nullptr};
+
+RadarTransmit* RadarTransmit::getInstance(QObject* parent, RadarEngine *engine)
+{
+    if(instance == nullptr) instance = new RadarTransmit(parent, engine);
+    return  instance;
+}
+
 RadarTransmit::RadarTransmit(QObject *parent, RadarEngine *re):
     QObject(parent),m_re(re)
 {
     socket.setSocketOption(QAbstractSocket::MulticastTtlOption, 1);
 }
+
 void RadarTransmit::setMulticastData(QString addr, uint port)
 {
     qDebug()<<Q_FUNC_INFO<<addr<<port;

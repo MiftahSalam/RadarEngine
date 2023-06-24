@@ -15,9 +15,10 @@ class RadarReceive : public QThread
 {
     Q_OBJECT
 public:
-    explicit RadarReceive(QObject *parent = 0,RadarEngine *engine = nullptr);
+    RadarReceive(RadarReceive& other) = delete;
+    void operator=(const RadarReceive&) = delete;
 
-    ~RadarReceive();
+    static RadarReceive* getInstance(QObject* parent = nullptr, RadarEngine *engine = nullptr);
 
     void exitReq();
     void setMulticastData(QString addr,uint port);
@@ -29,8 +30,12 @@ signals:
 
 protected:
     void run();
+    RadarReceive(QObject *parent = 0, RadarEngine *engine = nullptr);
+    ~RadarReceive();
 
 private:
+    static RadarReceive* instance;
+
     void processFrame(QByteArray data, int len);
     void processReport(QByteArray data, int len);
 
