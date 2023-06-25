@@ -22,3 +22,6 @@ unix: {
     INSTALLS += target
     INSTALLS += header
 }
+
+DISTFILES += \
+    CMakeLists.txt
