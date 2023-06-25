@@ -10,30 +10,31 @@ using namespace RadarEngine;
 RadarConfig* RadarConfig::instance{nullptr};
 
 QStringList RadarConfig::nonVolatileKeys =
-        QStringList()<<NON_VOLATILE_PPI_DISPLAY_SHOW_RING
-                    <<NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS
-                   <<NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER
-                  <<NON_VOLATILE_PPI_DISPLAY_HEADING_UP
-                  <<NON_VOLATILE_PPI_DISPLAY_LAST_SCALE
-                 <<NON_VOLATILE_PPI_DISPLAY_SHOW_GZ
-                <<NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1
-                <<NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA
-               <<NON_VOLATILE_PPI_DISPLAY_USE_OPENGL_SOFTWARE
-               <<NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP
-               <<NON_VOLATILE_RADAR_NET_IP_DATA
-              <<NON_VOLATILE_RADAR_NET_IP_REPORT
-             <<NON_VOLATILE_RADAR_NET_IP_CMD
-            <<NON_VOLATILE_RADAR_NET_PORT_DATA
-           <<NON_VOLATILE_RADAR_NET_PORT_REPORT
-          <<NON_VOLATILE_RADAR_NET_PORT_CMD
-         <<NON_VOLATILE_RADAR_TRAIL_ENABLE
-        <<NON_VOLATILE_RADAR_TRAIL_TIME
-       <<NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN
-      <<NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1
-     <<NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2
-    <<NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE
-   <<NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK
-  <<NON_VOLATILE_ARPA_NET_CONFIG
+        QStringList()<<NON_VOLATILE_PPI_DISPLAY_UNIT
+                    <<NON_VOLATILE_PPI_DISPLAY_SHOW_RING
+                   <<NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS
+                  <<NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER
+                 <<NON_VOLATILE_PPI_DISPLAY_HEADING_UP
+                <<NON_VOLATILE_PPI_DISPLAY_LAST_SCALE
+               <<NON_VOLATILE_PPI_DISPLAY_SHOW_GZ
+              <<NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1
+             <<NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA
+            <<NON_VOLATILE_PPI_DISPLAY_USE_OPENGL_SOFTWARE
+           <<NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP
+          <<NON_VOLATILE_RADAR_NET_IP_DATA
+         <<NON_VOLATILE_RADAR_NET_IP_REPORT
+        <<NON_VOLATILE_RADAR_NET_IP_CMD
+       <<NON_VOLATILE_RADAR_NET_PORT_DATA
+      <<NON_VOLATILE_RADAR_NET_PORT_REPORT
+     <<NON_VOLATILE_RADAR_NET_PORT_CMD
+    <<NON_VOLATILE_RADAR_TRAIL_ENABLE
+   <<NON_VOLATILE_RADAR_TRAIL_TIME
+  <<NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN
+ <<NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1
+<<NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2
+<<NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE
+<<NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK
+<<NON_VOLATILE_ARPA_NET_CONFIG
 <<NON_VOLATILE_GZ_ENABLE_ALARM
 <<NON_VOLATILE_GZ_MODE
 <<NON_VOLATILE_GZ_TIMEOUT
@@ -56,7 +57,7 @@ QStringList RadarConfig::nonVolatileKeys =
 <<NON_VOLATILE_NAV_CONTROL_GPS_AUTO
 <<NON_VOLATILE_NAV_CONTROL_HEADING_AUTO
 <<NON_VOLATILE_NAV_NET_CONFIG
-                      ;
+  ;
 
 RadarConfig::RadarConfig(QObject *parent, QString path): QObject (parent), filePath(path)
 {
@@ -149,7 +150,7 @@ void RadarConfig::loadConfig()
 
     while (i < nonVolatileVar_keys.size())
     {
-//        qDebug()<<Q_FUNC_INFO<<"nonVolatileVar keys"<<nonVolatileVar_keys.at(i);
+        //        qDebug()<<Q_FUNC_INFO<<"nonVolatileVar keys"<<nonVolatileVar_keys.at(i);
         if(!buf_nonVolatileKeys.contains(nonVolatileVar_keys.at(i))) qWarning()<<Q_FUNC_INFO<<"undesired key"<<nonVolatileVar_keys.at(i);
         else buf_nonVolatileKeys.removeOne(nonVolatileVar_keys.at(i));
         i++;
@@ -162,6 +163,7 @@ void RadarConfig::initConfig()
 {
     qDebug()<<Q_FUNC_INFO;
     //non volatile
+    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_UNIT,0); //0: metric, 1: nautical
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_RING,false);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_HEADING_UP,false);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS,true);

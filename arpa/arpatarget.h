@@ -3,8 +3,9 @@
 
 #include <QObject>
 
+//#include "RadarEngine/shared/utils.h"
 #include "shared/constants.h"
-#include "kalmanfilter.h"
+#include "arpa/kalmanfilter.h"
 
 //#define SCAN_MARGIN (750)
 #define SCAN_MARGIN (150)
@@ -46,6 +47,18 @@ struct SpeedHistory
     double dif[SPEED_HISTORY];
     double sd;
     int nr;
+};
+
+class Position
+{
+public:
+    double lat;
+    double lon;
+    double dlat_dt;   // m / sec
+    double dlon_dt;   // m / sec
+    quint64 time;  // millis
+    double speed_kn;
+    double sd_speed_kn;  // standard deviation of the speed in knots
 };
 
 class ARPATarget : public QObject
@@ -100,5 +113,8 @@ private:
 };
 
 }
+
+RadarEngine::Position Polar2Pos(Polar pol, RadarEngine::Position own_ship, double range);
+Polar Pos2Polar(RadarEngine::Position p, RadarEngine::Position own_ship, int range);
 
 #endif // ARPATARGET_H

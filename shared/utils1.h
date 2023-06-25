@@ -1,20 +1,18 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "shared/global.h"
+#include "RadarEngine/shared/global.h"
 
 namespace RadarEngine {
 
-class Polar {
- public:
+struct Polar {
   int angle;
   int r;
   quint64 time;  // wxGetUTCTimeMillis
 };
 
-class Position
+struct Position
 {
-public:
     double lat;
     double lon;
     double dlat_dt;   // m / sec

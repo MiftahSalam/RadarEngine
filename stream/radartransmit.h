@@ -35,7 +35,7 @@ public slots:
 
 protected:
     RadarTransmit(QObject *parent = 0, RadarEngine *engine = nullptr);
-    ~RadarTransmit();
+    ~RadarTransmit(){}
 
 private:
     static RadarTransmit* instance;

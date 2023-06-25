@@ -3,8 +3,9 @@
 
 #include <QObject>
 
+//#include "RadarEngine/shared/utils.h"
 #include "shared/constants.h"
-#include "arpatarget.h"
+#include "arpa/arpatarget.h"
 
 namespace RadarEngine {
 
@@ -38,7 +39,7 @@ signals:
 
 protected:
     RadarArpa(QObject *parent = nullptr, RadarEngine *ri=nullptr);
-    ~RadarArpa();
+    ~RadarArpa(){}
 
 private:
     static RadarArpa* instance;

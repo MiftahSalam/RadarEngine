@@ -3,9 +3,7 @@
 
 #include <QObject>
 
-#include "shared/utils.h"
-
-using namespace RadarEngine;
+//#include "RadarEngine/shared/utils.h"
 
 template <typename Ty, int N, int M = N>
 
@@ -104,6 +102,7 @@ Matrix<Ty, N, P> operator*(const Matrix<Ty, N, M>& a, const Matrix<Ty, M, P>& b)
   return result;
 }
 
+
 template <typename Ty, int N, int M>
 Matrix<Ty, N, M> operator-(const Matrix<Ty, N, M>& a) {
   Matrix<Ty, N, M> result;
@@ -168,6 +167,14 @@ public:
   double dlon_dt;
   double sd_speed_m_s;  // standard deviation of the speed m / sec
 
+};
+
+
+class Polar {
+public:
+  int angle;
+  int r;
+  quint64 time;  // wxGetUTCTimeMillis
 };
 
 class KalmanFilter : public QObject

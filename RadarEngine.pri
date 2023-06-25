@@ -6,8 +6,8 @@ HEADERS_BASE += \
 
 HEADERS_SHARED += \
                 $$PWD/shared/global.h \
-                $$PWD/shared/constants.h \
-                $$PWD/shared/utils.h
+                $$PWD/shared/constants.h
+#                $$PWD/shared/utils.h
 
 HEADERS_ARPA += \
                 $$PWD/arpa/kalmanfilter.h \
@@ -21,7 +21,7 @@ HEADERS_STREAM += \
 SOURCES += \
            $$PWD/radarconfig.cpp \
            $$PWD/radarengine.cpp \
-           $$PWD/shared/utils.cpp \
+#           $$PWD/shared/utils.cpp \
            $$PWD/stream/radarreceive.cpp \
            $$PWD/stream/radartransmit.cpp \
            $$PWD/radardraw.cpp \
