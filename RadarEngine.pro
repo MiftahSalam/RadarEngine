@@ -12,21 +12,22 @@ MOC_DIR = tmp
 OBJECTS_DIR = obj
 
 unix: {
-    target.path = /usr/lib/RadarEngine
+    target.path = /usr/lib/RadarEngine/2022/v1/
     header_base.files = $$HEADERS_BASE
-    header_base.path = /usr/include/RadarEngine
+    header_base.path = /usr/include/RadarEngine/2022/v1/
+
     INSTALLS += target
     INSTALLS += header_base
 	
-    INCLUDEPATH += /usr/include/RadarConfig/
-    DEPENDPATH += /usr/include/RadarConfig/
+    INCLUDEPATH += /usr/include/RadarConfig/2022/v1/
+    DEPENDPATH += /usr/include/RadarConfig/2022/v1/
 	
-    LIBS += -L/usr/lib/RadarConfig/ -lRadarConfig
+    LIBS += -L/usr/lib/RadarConfig/2022/v1/ -lRadarConfig
 
 } else:win32 {
-    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\ -lRadarConfig
+    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\2022\v1\ -lRadarConfig
     LIBS += -lOpenGL32
 	
-    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include
-    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include
+    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include\2022\v1\
+    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include\2022\v1\
 }
