@@ -25,9 +25,12 @@ unix: {
     LIBS += -L/usr/lib/RadarConfig/2022/v1/ -lRadarConfig
 
 } else:win32 {
-    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\2022\v1\ -lRadarConfig
+#    LIBS += -LC:\Users\miftah\RadarConfigLib\lib\2022\v1\ -lRadarConfig
+    LIBS += -LC:\Users\ms_tensai\RadarConfigLib\lib\2022\v1\ -lRadarConfig
     LIBS += -lOpenGL32
 	
-    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include\2022\v1\
-    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include\2022\v1\
+#    INCLUDEPATH += C:\Users\miftah\RadarConfigLib\include\2022\v1\
+#    DEPENDPATH += C:\Users\miftah\RadarConfigLib\lib\include\2022\v1\
+    INCLUDEPATH += C:\Users\ms_tensai\RadarConfigLib\include\2022\v1\
+    DEPENDPATH += C:\Users\ms_tensai\RadarConfigLib\lib\include\2022\v1\
 }

@@ -539,7 +539,7 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
     {
         trigger_ReqRangeChange(static_cast<int>(cur_scale));
         ResetSpokes();
-        qDebug()<<Q_FUNC_INFO<<"range mismatch "<<cur_scale<<" to "<<new_range;
+        qDebug()<<Q_FUNC_INFO<<"range mismatch "<<cur_scale<<" to "<<static_cast<uint>(new_range*2/10);
     }
 }
 
