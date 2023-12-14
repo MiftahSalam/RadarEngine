@@ -495,7 +495,7 @@ void RadarEngine::RadarEngine::trigger_stopRadar()
 
 void RadarEngine::RadarEngine::trigger_ReqRangeChange(int range)
 {
-    radarTransmit->setRange(range/2);
+    radarTransmit->setRange(range/2.);
 }
 
 void RadarEngine::RadarEngine::trigger_clearTrail()
@@ -535,7 +535,7 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
         ResetSpokes();
         qDebug()<<Q_FUNC_INFO<<"detected spoke range change from "<<cur_range<<" to "<<new_range;
     }
-    if ((cur_scale != static_cast<uint>(new_range*2/10)))
+    if ((cur_scale - static_cast<uint>(new_range*2/10)) > 1)
     {
         trigger_ReqRangeChange(static_cast<int>(cur_scale));
         ResetSpokes();

@@ -14,7 +14,7 @@ void RadarTransmit::setMulticastData(QString addr, uint port)
     _data_port = port;
 }
 
-void RadarTransmit::setRange(int meters)
+void RadarTransmit::setRange(float meters)
 {
     qDebug()<<Q_FUNC_INFO<<"transmit: range "<<meters;
     if (meters >= 50 && meters <= 120008704)

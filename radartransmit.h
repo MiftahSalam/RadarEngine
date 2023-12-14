@@ -18,7 +18,7 @@ public:
 
     void setControlValue(ControlType controlType, int value);
     void setMulticastData(QString addr,uint port);
-    void setRange(int meters);
+    void setRange(float meters);
 
     QUdpSocket socket;
 
