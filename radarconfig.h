@@ -2,6 +2,7 @@
 #define RADARCONFIG_H
 
 #include "shared/constants.h"
+
 #include <QVariant>
 #include <QObject>
 

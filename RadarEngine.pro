@@ -1,4 +1,4 @@
-QT       += core network opengl
+QT       += network opengl
 
 include(RadarEngine.pri)
 
