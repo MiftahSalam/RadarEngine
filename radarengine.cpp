@@ -62,7 +62,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     connect(m_radar_receive,&RadarReceive::ProcessRadarSpoke,
             this,&RadarEngine::radarReceiveProcessRadarSpoke);
 
-    connect(this,SIGNAL(signal_stay_alive()),m_radar_transmit,SLOT(RadarStayAlive()));
+    connect(this,SIGNAL(SignalStayAlive()),m_radar_transmit,SLOT(RadarStayAlive()));
     connect(instance,&RadarConfig::configValueChange,this,&RadarEngine::onRadarConfigChange);
 
     TriggerReqRadarSetting();
