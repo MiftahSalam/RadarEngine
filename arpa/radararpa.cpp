@@ -1,4 +1,5 @@
 #include "radararpa.h"
+#include "radarconfig.h"
 #include "radarengine.h"
 
 using namespace RadarEngine;

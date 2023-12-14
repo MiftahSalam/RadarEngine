@@ -2,7 +2,6 @@
 #define RADARENGINE_H
 
 #include "shared/constants.h"
-#include "radarconfig.h"
 #include "guardzone.h"
 #include "stream/radarreceive.h"
 #include "stream/radartransmit.h"

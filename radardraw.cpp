@@ -1,4 +1,5 @@
 #include "radardraw.h"
+#include "radarconfig.h"
 #include "radarengine.h"
 
 #include <QOpenGLFunctions>

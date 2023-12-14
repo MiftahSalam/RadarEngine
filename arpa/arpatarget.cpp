@@ -1,4 +1,5 @@
 #include "arpatarget.h"
+#include "radarconfig.h"
 #include "radarengine.h"
 
 #include <qmath.h>

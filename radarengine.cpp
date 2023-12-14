@@ -1,3 +1,4 @@
+#include "radarconfig.h"
 #include "radarengine.h"
 #include "shared/constants.h"
 
