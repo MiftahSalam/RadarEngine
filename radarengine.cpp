@@ -258,7 +258,7 @@ void RadarEngine::RadarEngine::radarReceiveProcessRadarSpoke(int angle_raw, QByt
         if(mti_enable)
             old_strength_info[bearing][radius] = new_strength_info[bearing][radius];
     }
-    raw_data[RETURNS_PER_LINE-1] = 255; //range rings
+//    raw_data[RETURNS_PER_LINE-1] = 255; //range rings
 
     /*check Guardzone*/
     //    if(gz_settings.show && gz_settings.enable_alarm)
