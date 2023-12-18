@@ -4,8 +4,8 @@
 #include <QObject>
 
 //#include "RadarEngine/shared/utils.h"
-#include "shared/constants.h"
-#include "arpa/kalmanfilter.h"
+#include "constants.h"
+#include "kalmanfilter.h"
 
 //#define SCAN_MARGIN (750)
 #define SCAN_MARGIN (150)

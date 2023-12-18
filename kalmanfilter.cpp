@@ -1,5 +1,5 @@
 #include "kalmanfilter.h"
-#include "shared/constants.h"
+#include "constants.h"
 #include "radarconfig.h"
 
 static Matrix<double, 4, 2> ZeroMatrix42;

@@ -1,7 +1,7 @@
 #ifndef RADARCONFIG_H
 #define RADARCONFIG_H
 
-#include "shared/constants.h"
+#include "constants.h"
 
 #include <QVariant>
 #include <QObject>

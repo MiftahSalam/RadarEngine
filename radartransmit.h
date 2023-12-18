@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QUdpSocket>
 
-#include "shared/constants.h"
-#include "shared/global.h"
+#include "constants.h"
+#include "global.h"
 
 namespace RadarEngine {
 

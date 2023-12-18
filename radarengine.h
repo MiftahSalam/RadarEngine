@@ -1,12 +1,12 @@
 #ifndef RADARENGINE_H
 #define RADARENGINE_H
 
-#include "shared/constants.h"
+#include "constants.h"
 #include "guardzone.h"
-#include "stream/radarreceive.h"
-#include "stream/radartransmit.h"
+#include "radarreceive.h"
+#include "radartransmit.h"
 #include "radardraw.h"
-#include "arpa/radararpa.h"
+#include "radararpa.h"
 
 #include <QTimer>
 

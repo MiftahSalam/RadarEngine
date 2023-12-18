@@ -1,6 +1,6 @@
 #include "radarconfig.h"
 #include "radarengine.h"
-#include "shared/constants.h"
+#include "constants.h"
 
 #include <QtOpenGL/qgl.h>
 #include <unistd.h>

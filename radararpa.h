@@ -4,8 +4,8 @@
 #include <QObject>
 
 //#include "RadarEngine/shared/utils.h"
-#include "shared/constants.h"
-#include "arpa/arpatarget.h"
+#include "constants.h"
+#include "arpatarget.h"
 
 namespace RadarEngine {
 

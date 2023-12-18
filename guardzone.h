@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QMutex>
 
-#include "shared/constants.h"
+#include "constants.h"
 
 namespace RadarEngine {
 

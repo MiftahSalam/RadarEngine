@@ -3,34 +3,24 @@ HEADERS_BASE += \
                 $$PWD/radarengine.h \
                 $$PWD/radardraw.h \
                 $$PWD/guardzone.h \
-
-HEADERS_SHARED += \
-                $$PWD/shared/global.h \
-                $$PWD/shared/constants.h
-#                $$PWD/shared/utils.h
-
-HEADERS_ARPA += \
-                $$PWD/arpa/kalmanfilter.h \
-                $$PWD/arpa/arpatarget.h \
-                $$PWD/arpa/radararpa.h
-
-HEADERS_STREAM += \
-                $$PWD/stream/radartransmit.h \
-                $$PWD/stream/radarreceive.h
+                $$PWD/global.h \
+                $$PWD/constants.h \
+                $$PWD/kalmanfilter.h \
+                $$PWD/arpatarget.h \
+                $$PWD/radararpa.h \
+                $$PWD/radartransmit.h \
+                $$PWD/radarreceive.h
 
 SOURCES += \
            $$PWD/radarconfig.cpp \
            $$PWD/radarengine.cpp \
 #           $$PWD/shared/utils.cpp \
-           $$PWD/stream/radarreceive.cpp \
-           $$PWD/stream/radartransmit.cpp \
+           $$PWD/radarreceive.cpp \
+           $$PWD/radartransmit.cpp \
            $$PWD/radardraw.cpp \
-           $$PWD/arpa/arpatarget.cpp \
-           $$PWD/arpa/kalmanfilter.cpp \
+           $$PWD/arpatarget.cpp \
+           $$PWD/kalmanfilter.cpp \
            $$PWD/guardzone.cpp \
-           $$PWD/arpa/radararpa.cpp
+           $$PWD/radararpa.cpp
 
-HEADERS += $$HEADERS_BASE \
-           $$HEADERS_SHARED \
-           $$HEADERS_ARPA \
-           $$HEADERS_STREAM
+HEADERS += $$HEADERS_BASE

@@ -1,7 +1,7 @@
 #ifndef RADARDRAW_H
 #define RADARDRAW_H
 
-#include "shared/constants.h"
+#include "constants.h"
 
 #include <QtOpenGL/qgl.h>
 #include <QOpenGLShaderProgram>
