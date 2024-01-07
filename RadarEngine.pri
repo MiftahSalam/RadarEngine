@@ -1,4 +1,5 @@
 HEADERS_BASE += \
+                $$PWD/radarimagecapture.h \
                 $$PWD/radarconfig.h \
                 $$PWD/radarengine.h \
                 $$PWD/radardraw.h \
@@ -12,6 +13,7 @@ HEADERS_BASE += \
                 $$PWD/radarreceive.h
 
 SOURCES += \
+           $$PWD/radarimagecapture.cpp \
            $$PWD/radarconfig.cpp \
            $$PWD/radarengine.cpp \
            $$PWD/radarreceive.cpp \

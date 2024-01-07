@@ -48,6 +48,7 @@ RadarEngine::RadarEngine::RadarEngine(QObject *parent):
     timer = new QTimer(this);
     connect(timer,SIGNAL(timeout()),this,SLOT(timerTimeout()));
 
+    m_radar_capture = new RadarImageCapture(this, this);
     m_radar_receive = RadarReceive::getInstance(this,this);
     m_radar_transmit = RadarTransmit::getInstance(this,this);
     radarDraw = RadarDraw::make_Draw(this,0);

@@ -3,6 +3,7 @@
 
 #include "constants.h"
 #include "guardzone.h"
+#include "radarimagecapture.h"
 #include "radarreceive.h"
 #include "radartransmit.h"
 #include "radardraw.h"
@@ -54,6 +55,7 @@ public:
 
     RadarDraw *radarDraw;
     RadarArpa *radarArpa;
+    RadarImageCapture *m_radar_capture;
     QMap<QString,GuardZone *> guardZones;
 
 signals:
