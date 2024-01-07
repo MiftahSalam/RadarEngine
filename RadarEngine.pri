@@ -14,7 +14,6 @@ HEADERS_BASE += \
 SOURCES += \
            $$PWD/radarconfig.cpp \
            $$PWD/radarengine.cpp \
-#           $$PWD/shared/utils.cpp \
            $$PWD/radarreceive.cpp \
            $$PWD/radartransmit.cpp \
            $$PWD/radardraw.cpp \
