@@ -75,24 +75,28 @@
 #define BLOB_COLOURS (BLOB_STRONG + 1) //36
 #define BLOB_HISTORY_COLOURS (BLOB_HISTORY_MAX - BLOB_NONE) //32
 
-static const QList<int> distanceList = QList<int>()<<40000 //0
-                                                <<30000 //1
-                                               <<20000 //2
-                                              <<10000 //3
-                                             <<5000 //4
-                                            <<2000 //5
-                                           <<1500 //6
-                                          <<1000 //7
-                                         <<500 //8
+static const QList<int> distanceList = QList<int>()<<60000 //0
+                                                <<50000 //1
+                                               <<40000 //2
+                                              <<30000 //3
+                                             <<20000 //4
+                                            <<10000 //5
+                                           <<5000 //6
+                                          <<2000 //7
+                                         <<1500 //8
+                                        <<1000 //9
+                                       <<500 //10
                                            ;
-static const QList<int> distanceListNautical = QList<int>()<<25000/KM_TO_NM //0
-                                                <<20000/KM_TO_NM //1
-                                               <<15000/KM_TO_NM //2
-                                              <<10000/KM_TO_NM //3
-                                             <<5000/KM_TO_NM //4
-                                            <<2000/KM_TO_NM //5
-                                           <<1500/KM_TO_NM //6
+static const QList<int> distanceListNautical = QList<int>()<<32000/KM_TO_NM //0
+                                                <<27000/KM_TO_NM //1
+                                               <<22000/KM_TO_NM //2
+                                              <<16000/KM_TO_NM //3
+                                             <<10000/KM_TO_NM //4
+                                            <<5000/KM_TO_NM //5
+                                           <<2000/KM_TO_NM //6
                                           <<1000/KM_TO_NM //7
-                                         <<500/KM_TO_NM //8
+                                         <<800/KM_TO_NM //8
+                                        <<500/KM_TO_NM //9
+                                       <<250/KM_TO_NM //10
                                            ;
 #endif // RADARENGINE_CONSTANTS_H
