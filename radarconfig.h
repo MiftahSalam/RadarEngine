@@ -26,6 +26,7 @@ const QString NON_VOLATILE_RADAR_NET_IP_CMD = "Radar/net/ip_command";
 const QString NON_VOLATILE_RADAR_NET_PORT_DATA = "Radar/net/port_data";
 const QString NON_VOLATILE_RADAR_NET_PORT_REPORT = "Radar/net/port_report";
 const QString NON_VOLATILE_RADAR_NET_PORT_CMD = "Radar/net/port_command";
+const QString NON_VOLATILE_RADAR_NET_WS = "Radar/net/ws";
 const QString NON_VOLATILE_RADAR_TRAIL_ENABLE = "Radar/trail/enable";
 const QString NON_VOLATILE_RADAR_TRAIL_TIME = "Radar/trail/time";
 
@@ -35,6 +36,7 @@ const QString NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2 = "Arpa/params/search_radi
 const QString NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE = "Arpa/params/max_target_size";
 const QString NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK = "Arpa/control/create_arpa_by_click";
 const QString NON_VOLATILE_ARPA_NET_CONFIG = "Arpa/net/config";
+const QString NON_VOLATILE_ARPA_NET_CONFIG_WS = "Arpa/net/config/ws";
 
 const QString NON_VOLATILE_GZ_ENABLE_ALARM = "GZ/enable_alarm";
 const QString NON_VOLATILE_GZ_MODE = "GZ/mode";
@@ -60,6 +62,7 @@ const QString NON_VOLATILE_NAV_DATA_LAST_LONGITUDE = "Nav/data/last_lon";
 const QString NON_VOLATILE_NAV_CONTROL_GPS_AUTO = "Nav/control/gps_auto";
 const QString NON_VOLATILE_NAV_CONTROL_HEADING_AUTO = "Nav/control/heading_auto";
 const QString NON_VOLATILE_NAV_NET_CONFIG = "Nav/net/config";
+const QString NON_VOLATILE_NAV_NET_CONFIG_WS = "Nav/net/config/ws";
 
 const QString VOLATILE_NAV_STATUS_HEADING = "Nav/status/heading";
 const QString VOLATILE_NAV_STATUS_GPS = "Nav/status/gps";
