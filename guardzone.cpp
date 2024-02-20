@@ -40,9 +40,11 @@ void GuardZone::ProcessSpoke(int angle, UINT8* data/*, UINT8* hist, int range*/)
     bool in_guard_zone = false;
     const bool is_heading_up =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
     const double hdt = is_heading_up ? RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble() : 0.;
+    const double orientation = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_ORIENTATION).toDouble();
+    const double hdtCorr = hdt + orientation;
 
-    m_start_bearing = SCALE_DEGREES_TO_RAW2048(m_start_bearing_deg-hdt);
-    m_end_bearing = SCALE_DEGREES_TO_RAW2048(m_end_bearing_deg-hdt);
+    m_start_bearing = SCALE_DEGREES_TO_RAW2048(m_start_bearing_deg-hdtCorr);
+    m_end_bearing = SCALE_DEGREES_TO_RAW2048(m_end_bearing_deg-hdtCorr);
 
     switch (m_type)
     {
