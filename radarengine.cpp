@@ -521,6 +521,32 @@ void RadarEngine::RadarEngine::TriggerReqRadarSetting()
     m_radar_receive->start();
 }
 
+#ifdef DISPLAY_ONLY_MODE
+void RadarEngine::RadarEngine::checkRange(uint new_range)
+{
+    uint cur_range = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
+    uint range = static_cast<uint>(new_range * 2 / 10);
+    if (cur_range != range)
+    {
+        RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, range);
+
+        double cur_range_dec = static_cast<double>(range);
+        const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+        switch (unit) {
+        case 1:
+            cur_range_dec *= KM_TO_NM;
+            break;
+        default:
+            break;
+        }
+        RadarConfig::getInstance("")->setConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE, cur_range_dec);
+
+        resetSpokes();
+
+        qDebug() << Q_FUNC_INFO << "detected spoke range change from " << cur_range << " to " << range;
+    }
+}
+#else
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
     uint cur_range = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
@@ -549,6 +575,7 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
         qDebug() << Q_FUNC_INFO << "range mismatch " << cur_scale << " to " << new_range;
     }
 }
+#endif
 
 void RadarEngine::RadarEngine::receiveThreadReport(quint8 report_type, quint8 report_field, quint32 value)
 {
@@ -608,7 +635,7 @@ void RadarEngine::RadarEngine::receiveThreadReport(quint8 report_type, quint8 re
             //            qDebug()<<Q_FUNC_INFO<<"report argetExpan"<<filter.targetExpan;
             break;
         case RADAR_RANGE:
-            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, static_cast<uint>(value));
+//            RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, static_cast<uint>(value));
             checkRange(value);
             qDebug() << Q_FUNC_INFO << "report range" << value;
             break;
