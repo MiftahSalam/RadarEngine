@@ -521,6 +521,7 @@ void RadarEngine::RadarEngine::TriggerReqRadarSetting()
     m_radar_receive->start();
 }
 
+#ifdef DISPLAY_ONLY_MODE
 void RadarEngine::RadarEngine::checkRange(uint new_range)
 {
     uint cur_range = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
@@ -545,6 +546,36 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
         qDebug() << Q_FUNC_INFO << "detected spoke range change from " << cur_range << " to " << range;
     }
 }
+#else
+void RadarEngine::RadarEngine::checkRange(uint new_range)
+{
+    uint cur_range = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE).toUInt();
+    const uint cur_scale = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toUInt();
+    //    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
+
+    //    switch (unit) {
+    //    case 1:
+    //        cur_range /= KM_TO_NM;
+    //        break;
+    //    default:
+    //        break;
+    //    }
+    if ((cur_range != static_cast<uint>(new_range)))
+    {
+        RadarConfig::getInstance("")->setConfig(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, new_range * 2 / 10);
+        //        m_range_meters = new_range;
+        //        emit signal_range_change(new_range/10);
+        resetSpokes();
+        qDebug() << Q_FUNC_INFO << "detected spoke range change from " << cur_range << " to " << new_range;
+    }
+    if ((cur_scale != static_cast<uint>(new_range * 2 / 10)))
+    {
+        TriggerReqRangeChange(static_cast<int>(cur_scale));
+        resetSpokes();
+        qDebug() << Q_FUNC_INFO << "range mismatch " << cur_scale << " to " << new_range;
+    }
+}
+#endif
 
 void RadarEngine::RadarEngine::receiveThreadReport(quint8 report_type, quint8 report_field, quint32 value)
 {

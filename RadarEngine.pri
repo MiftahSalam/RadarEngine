@@ -1,3 +1,5 @@
+DEFINES += DISPLAY_ONLY_MODE
+
 HEADERS_BASE += \
                 $$PWD/radarimagecapture.h \
                 $$PWD/radarconfig.h \
