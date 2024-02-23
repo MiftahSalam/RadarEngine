@@ -9,13 +9,20 @@
 namespace RadarEngine {
 class RadarEngine;
 
+struct CaptureResult
+{
+    QString echo;
+    int width;
+    int height;
+};
+
 class RadarImageCapture: public QObject
 {
     Q_OBJECT
 public:
     RadarImageCapture(QObject *parent, RadarEngine *re);
 
-    void capture(int width, int height);
+    CaptureResult capture(int width, int height);
     void start();
     void stop();
     void update();
@@ -24,6 +31,7 @@ public:
 
 signals:
     void signalSendEcho(const QString echo, const int vp_width, const int vp_height);
+//    void signalSendEchAsync(const CaptureResult echo);
 
 private slots:
     void trigger_radarConfigChange(QString key, QVariant val);

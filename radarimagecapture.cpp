@@ -25,8 +25,10 @@ RadarEngine::RadarImageCapture::RadarImageCapture(QObject *parent, RadarEngine *
     m_re = re;
 }
 
-void RadarEngine::RadarImageCapture::capture(int width, int height)
+RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(int width, int height)
 {
+    CaptureResult result;
+
     if(grabStart)
     {
         int size = qMin(width, height); //scale 1
@@ -52,6 +54,10 @@ void RadarEngine::RadarImageCapture::capture(int width, int height)
 
         emit signalSendEcho(strBase64, image.width(), image.height());
 
+        result.echo = strBase64;
+        result.width = image.width();
+        result.height = image.height();
+
         /* test read and save from base64 image*/
         QByteArray ba64 = QByteArray::fromBase64(strBase64.toUtf8());
         QPixmap img;
@@ -64,6 +70,8 @@ void RadarEngine::RadarImageCapture::capture(int width, int height)
         grabPending = false;
     }
     else qWarning()<<Q_FUNC_INFO<<"Grab not start";
+
+    return result;
 }
 
 bool RadarEngine::RadarImageCapture::pendingGrabAvailable() const
