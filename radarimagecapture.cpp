@@ -25,19 +25,30 @@ RadarEngine::RadarImageCapture::RadarImageCapture(QObject *parent, RadarEngine *
     m_re = re;
 }
 
-RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(int width, int height)
+QBuffer* RadarEngine::RadarImageCapture::readPixel(int width, int height)
+{
+    int size = qMin(width, height); //scale 1
+    int buffer_size = size*size*4;
+    QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
+    uchar *buffer = new uchar[buffer_size];
+
+    f->glReadPixels((width - size) / 2, (height - size) / 2, size, size, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
+
+    QBuffer* buf = new QBuffer();
+    buf->setData((const char*)buffer, buffer_size);
+
+    return buf;
+}
+
+RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(const QBuffer* data, int width, int height)
 {
     CaptureResult result;
 
     if(grabStart)
     {
+
         int size = qMin(width, height); //scale 1
-        QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
-        uchar *buffer = new uchar[size*size*4];
-
-        f->glReadPixels((width - size) / 2, (height - size) / 2, size, size, GL_BGRA, GL_UNSIGNED_BYTE, buffer);
-
-        QImage image(buffer, size, size, QImage::Format_ARGB32);
+        QImage image((const uchar*)data->data().data(), size, size, QImage::Format_ARGB32);
         QTransform tr;
         tr.rotate(180.);
         image = image.transformed(tr);

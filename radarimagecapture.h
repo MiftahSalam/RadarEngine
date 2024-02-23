@@ -1,6 +1,7 @@
 #ifndef RADARIMAGECAPTURE_H
 #define RADARIMAGECAPTURE_H
 
+#include "qbuffer.h"
 #include "qobject.h"
 #include "qobjectdefs.h"
 #include "qvariant.h"
@@ -22,7 +23,8 @@ class RadarImageCapture: public QObject
 public:
     RadarImageCapture(QObject *parent, RadarEngine *re);
 
-    CaptureResult capture(int width, int height);
+    QBuffer *readPixel(int width, int height);
+    CaptureResult capture(const QBuffer* data, int width, int height);
     void start();
     void stop();
     void update();
