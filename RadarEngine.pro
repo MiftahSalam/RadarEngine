@@ -12,10 +12,10 @@ MOC_DIR = tmp
 OBJECTS_DIR = obj
 
 unix: {
-    target.path = /usr/lib/RadarEngine
+    target.path = /usr/lib/hypernet-2024/RadarEngine
 
     header_base.files = $$HEADERS_BASE
-    header_base.path = /usr/include/RadarEngine
+    header_base.path = /usr/include/hypernet-2024/RadarEngine
 
     INSTALLS += target
     INSTALLS += header_base
