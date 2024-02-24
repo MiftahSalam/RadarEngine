@@ -37,6 +37,7 @@ QStringList RadarConfig::nonVolatileKeys =
                   << NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK
                   << NON_VOLATILE_ARPA_NET_CONFIG
                   << NON_VOLATILE_ARPA_NET_CONFIG_WS
+                  << NON_VOLATILE_ECHO_NET_CONFIG_WS
                   << NON_VOLATILE_GZ_ENABLE_ALARM
                   << NON_VOLATILE_GZ_MODE
                   << NON_VOLATILE_GZ_TIMEOUT
@@ -201,6 +202,8 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK, true);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG, "mqtt;InOut;127.0.0.1:1883:radar");
     nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG_WS, "ws;Out;127.0.0.1:8884:5");
+
+    nonVolatileVar.insert(NON_VOLATILE_ECHO_NET_CONFIG_WS, "ws;Out;127.0.0.1:8885");
 
     nonVolatileVar.insert(NON_VOLATILE_GZ_ENABLE_ALARM, true);
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE, 0); // arc mode
