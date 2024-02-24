@@ -234,13 +234,13 @@ void RadarEngine::RadarEngine::radarReceiveProcessRadarSpoke(int angle_raw, QByt
     const bool mti_enable = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_FILTER_CONTROL_MTI).toBool();
     const int mti = RadarConfig::getInstance("")->getConfig(VOLATILE_RADAR_PARAMS_FILTER_DATA_MTI).toInt();
     const bool is_trail_enable = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_RADAR_TRAIL_ENABLE).toBool();
-    const double currentHeading = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
+    const double currentHeading = heading_up ? 0 : RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble();
     const double orientation = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_ORIENTATION).toDouble();
     const double currentOwnShipLat = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LATITUDE).toDouble();
     const double currentOwnShipLon = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE).toDouble();
     const double headingCorrection = currentHeading + orientation;
 
-    short int hdt_raw = heading_up ? 0 : static_cast<short>(SCALE_DEGREES_TO_RAW(headingCorrection));
+    short int hdt_raw = static_cast<short>(SCALE_DEGREES_TO_RAW(headingCorrection));
     int bearing_raw = angle_raw + hdt_raw;
 
     int angle = MOD_ROTATION2048(angle_raw / 2);
