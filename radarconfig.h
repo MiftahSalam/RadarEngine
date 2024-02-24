@@ -38,6 +38,8 @@ const QString NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK = "Arpa/control/cre
 const QString NON_VOLATILE_ARPA_NET_CONFIG = "Arpa/net/config";
 const QString NON_VOLATILE_ARPA_NET_CONFIG_WS = "Arpa/net/config/ws";
 
+const QString NON_VOLATILE_ECHO_NET_CONFIG_WS = "Echo/net/config/ws";
+
 const QString NON_VOLATILE_GZ_ENABLE_ALARM = "GZ/enable_alarm";
 const QString NON_VOLATILE_GZ_MODE = "GZ/mode";
 const QString NON_VOLATILE_GZ_NOTIF_THRESHOLD = "GZ/notif_threshold";
