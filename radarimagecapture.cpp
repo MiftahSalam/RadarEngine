@@ -40,47 +40,69 @@ QBuffer* RadarEngine::RadarImageCapture::readPixel(int width, int height)
     return buf;
 }
 
-RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(const QBuffer* data, int width, int height)
+RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(QImage data)
 {
     CaptureResult result;
 
     if(grabStart)
     {
+        result = processCapture(data);
+        grabPending = false;
+    }
+    else qWarning()<<Q_FUNC_INFO<<"Grab not start";
 
+    return result;
+}
+
+RadarEngine::CaptureResult RadarEngine::RadarImageCapture::capture(QBuffer *data, int width, int height)
+{
+    CaptureResult result;
+
+    if(grabStart)
+    {
         int size = qMin(width, height); //scale 1
-        QImage image((const uchar*)data->data().data(), size, size, QImage::Format_ARGB32);
+        QImage image((uchar*)data->data().data(), size, size, QImage::Format_ARGB32);
         QTransform tr;
-        tr.rotate(180.);
+        tr.rotate(90.);
+
         image = image.transformed(tr);
-        QByteArray ba;
-        QBuffer buf(&ba);
-        QString strBase64;
-
-        buf.open(QIODevice::WriteOnly);
-
-        image.save(&buf, "png");
-
-        strBase64 = QString(ba.toBase64(QByteArray::Base64Encoding));
-//        qDebug()<<Q_FUNC_INFO<<"base64"<<strBase64;
-
-        emit signalSendEcho(strBase64, image.width(), image.height());
-
-        result.echo = strBase64;
-        result.width = image.width();
-        result.height = image.height();
-
-        /* test read and save from base64 image*/
-        QByteArray ba64 = QByteArray::fromBase64(strBase64.toUtf8());
-        QPixmap img;
-        img.loadFromData(ba64);
-        img.save(qApp->applicationDirPath()+QDir::separator()+"base64_grab.png", "png");
-        //        image.save(qApp->applicationDirPath()+"/grab.png");
-//        grabStart = false; //test
-
+        result = processCapture(image);
 
         grabPending = false;
     }
     else qWarning()<<Q_FUNC_INFO<<"Grab not start";
+
+    return result;
+}
+
+RadarEngine::CaptureResult RadarEngine::RadarImageCapture::processCapture(QImage image)
+{
+    CaptureResult result;
+
+    QByteArray ba;
+    QBuffer buf(&ba);
+    QString strBase64;
+
+    buf.open(QIODevice::WriteOnly);
+    image.save(&buf, "png");
+
+    strBase64 = QString(ba.toBase64(QByteArray::Base64Encoding));
+
+#ifdef SAVE_CAPTURE
+    /* test read and save from base64 image*/
+    QByteArray ba64 = QByteArray::fromBase64(strBase64.toUtf8());
+    QPixmap img;
+    img.loadFromData(ba64);
+    img.save(qApp->applicationDirPath()+QDir::separator()+"base64_grab.png", "png");
+    //        image.save(qApp->applicationDirPath()+"/grab.png");
+    //        grabStart = false; //test
+#endif
+
+    //        emit signalSendEcho(strBase64, data.width(), data.height());
+
+    result.echo = strBase64;
+    result.width = image.width();
+    result.height = image.height();
 
     return result;
 }
@@ -101,7 +123,7 @@ void RadarEngine::RadarImageCapture::update()
             grabPending = true;
         }
 
-//        qDebug()<<Q_FUNC_INFO<<"currentAngle"<<currentAngle<<"LINES_PER_ROTATION"<<LINES_PER_ROTATION-1;
+        //        qDebug()<<Q_FUNC_INFO<<"currentAngle"<<currentAngle<<"LINES_PER_ROTATION"<<LINES_PER_ROTATION-1;
     }
     else qWarning()<<Q_FUNC_INFO<<"Grab not start";
 }

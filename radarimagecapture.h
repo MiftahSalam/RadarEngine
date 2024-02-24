@@ -24,7 +24,8 @@ public:
     RadarImageCapture(QObject *parent, RadarEngine *re);
 
     QBuffer *readPixel(int width, int height);
-    CaptureResult capture(const QBuffer* data, int width, int height);
+    CaptureResult capture(QImage data);
+    CaptureResult capture(QBuffer *data, int width, int height);
     void start();
     void stop();
     void update();
@@ -42,6 +43,7 @@ private:
     static RadarEngine *m_re;
 
     void stateChange(int state);
+    CaptureResult processCapture(QImage image);
 
     int currentAngle;
     bool grabStart;
