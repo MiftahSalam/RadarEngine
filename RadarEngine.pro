@@ -12,10 +12,10 @@ MOC_DIR = tmp
 OBJECTS_DIR = obj
 
 unix: {
-    target.path = /usr/lib/RadarEngine/pjs-2024
+    target.path = /usr/lib/pjs-2024/RadarEngine
 
     header_base.files = $$HEADERS_BASE
-    header_base.path = /usr/include/RadarEngine/pjs-2024
+    header_base.path = /usr/include/pjs-2024/RadarEngine
 
     INSTALLS += target
     INSTALLS += header_base
