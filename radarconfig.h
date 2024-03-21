@@ -62,6 +62,8 @@ const QString NON_VOLATILE_NAV_CONTROL_GPS_AUTO = "Nav/control/gps_auto";
 const QString NON_VOLATILE_NAV_CONTROL_HEADING_AUTO = "Nav/control/heading_auto";
 const QString NON_VOLATILE_NAV_NET_CONFIG = "Nav/net/config";
 
+const QString NON_VOLATILE_APP_DISPLAY_LANGUAGE = "App/language";
+
 const QString VOLATILE_NAV_STATUS_HEADING = "Nav/status/heading";
 const QString VOLATILE_NAV_STATUS_GPS = "Nav/status/gps";
 
