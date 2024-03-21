@@ -207,7 +207,7 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG_WS, "ws;Out;127.0.0.1:8884:5");
 
     nonVolatileVar.insert(NON_VOLATILE_ECHO_NET_CONFIG_WS, "ws;Out;127.0.0.1:8885");
-    nonVolatileVar.insert(NON_VOLATILE_APP_DISPLAY_LANGUAGE, "ws;Out;127.0.0.1:8885");
+    nonVolatileVar.insert(NON_VOLATILE_APP_DISPLAY_LANGUAGE, "en");
 
     nonVolatileVar.insert(NON_VOLATILE_GZ_ENABLE_ALARM, true);
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE, 0); // arc mode
@@ -233,7 +233,6 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_NAV_CONTROL_GPS_AUTO, true);
     nonVolatileVar.insert(NON_VOLATILE_NAV_CONTROL_HEADING_AUTO, true);
     nonVolatileVar.insert(NON_VOLATILE_NAV_NET_CONFIG, "mqtt;InOut;127.0.0.1:1883:gps");
-    nonVolatileVar.insert(NON_VOLATILE_NAV_NET_CONFIG_WS, "en");
 }
 
 void RadarConfig::saveConfig() const
