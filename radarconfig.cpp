@@ -58,8 +58,7 @@ QStringList RadarConfig::nonVolatileKeys =
                   << NON_VOLATILE_NAV_CONTROL_GPS_AUTO
                   << NON_VOLATILE_NAV_CONTROL_HEADING_AUTO
                   << NON_VOLATILE_NAV_NET_CONFIG
-                  << NON_VOLATILE_APP_DISPLAY_LANGUAGE
-                  << NON_VOLATILE_NAV_NET_CONFIG_WS;
+                  << NON_VOLATILE_APP_DISPLAY_LANGUAGE;
 
 RadarConfig::RadarConfig(QObject *parent, QString path) : QObject(parent), filePath(path)
 {
@@ -200,7 +199,8 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE, 50);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK, true);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG, "mqtt;InOut;127.0.0.1:1883:radar");
-    nonVolatileVar.insert(NON_VOLATILE_APP_DISPLAY_LANGUAGE, "ws;Out;127.0.0.1:8885");
+
+    nonVolatileVar.insert(NON_VOLATILE_APP_DISPLAY_LANGUAGE, "en");
 
     nonVolatileVar.insert(NON_VOLATILE_GZ_ENABLE_ALARM, true);
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE, 0); // arc mode
