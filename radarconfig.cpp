@@ -14,6 +14,10 @@ QStringList RadarConfig::nonVolatileKeys =
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_RING
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER
+                  << NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER
+                  << NON_VOLATILE_PPI_DISPLAY_EBL_VALUE
+                  << NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER
+                  << NON_VOLATILE_PPI_DISPLAY_VRM_VALUE
                   << NON_VOLATILE_PPI_DISPLAY_HEADING_UP
                   << NON_VOLATILE_PPI_DISPLAY_LAST_SCALE
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_GZ
@@ -140,6 +144,7 @@ void RadarConfig::loadConfig()
     volatileVar.insert(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, 0);
     volatileVar.insert(VOLATILE_RADAR_STATUS, 0);
     volatileVar.insert(VOLATILE_RADAR_WAKINGUP_TIME, 0);
+    volatileVar.insert(VOLATILE_PPI_ENABLE_OFF_CENTER, false);
 
     /*non volatile*/
     QSettings config(filePath, QSettings::IniFormat);
@@ -176,6 +181,10 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_HEADING_UP, false);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS, true);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER, true);
+    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER, false);
+    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_EBL_VALUE, 20.4);
+    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER, false);
+    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_VRM_VALUE, 1.4);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE, 2000);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ, true);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1, true);
