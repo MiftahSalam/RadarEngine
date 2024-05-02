@@ -35,8 +35,10 @@ void GuardZone::ProcessSpoke(int angle, UINT8* data/*, UINT8* hist, int range*/)
 
     //    qDebug()<<Q_FUNC_INFO<<"inner "<<m_inner_range<<"outter "<<m_outer_range;
 
-    int range_start = m_inner_range;  // Convert from meters to 0..511
-    int range_end = m_outer_range;    // Convert from meters to 0..511
+    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+    int range_start = m_inner_range*RETURNS_PER_LINE/curRange;  // Convert from meters to 0..511
+    int range_end = m_outer_range*RETURNS_PER_LINE/curRange;  // Convert from meters to 0..511
+//    int range_end = m_outer_range;    // Convert from meters to 0..511
     bool in_guard_zone = false;
     const bool is_heading_up =  RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_HEADING_UP).toBool();
     const double hdt = is_heading_up ? RadarConfig::getInstance("")->getConfig(NON_VOLATILE_NAV_DATA_LAST_HEADING).toDouble() : 0.;
@@ -167,7 +169,7 @@ void GuardZone::trigger_configChange(const QString key, const QVariant val)
 */
 void GuardZone::SetInnerRange(const int range)
 {
-    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
 //    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
@@ -178,13 +180,14 @@ void GuardZone::SetInnerRange(const int range)
 //        break;
 //    }
 
-    m_inner_range = range*RETURNS_PER_LINE/curRange;
+    m_inner_range = range;
+//    m_inner_range = range*RETURNS_PER_LINE/curRange;
     ResetBogeys();
 }
 
 void GuardZone::SetOutterRange(const int range)
 {
-    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
+//    double curRange = RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE).toDouble();
 //    const quint8 unit = static_cast<quint8>(RadarConfig::getInstance("")->getConfig(NON_VOLATILE_PPI_DISPLAY_UNIT).toUInt());
 
 //    switch (unit) {
@@ -195,7 +198,8 @@ void GuardZone::SetOutterRange(const int range)
 //        break;
 //    }
 
-    m_outer_range = range*RETURNS_PER_LINE/curRange;
+    m_outer_range = range;
+//    m_outer_range = range*RETURNS_PER_LINE/curRange;
     ResetBogeys();
 }
 
