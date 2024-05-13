@@ -8,21 +8,21 @@
 
 namespace RadarEngine {
 
-const QString NON_VOLATILE_PPI_DISPLAY_UNIT("PPI/Display/unit");
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_RING("PPI/Display/show_ring");
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS = "PPI/Display/show_compass";
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER = "PPI/Display/show_heading_marker";
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER = "PPI/Display/show_ebl_marker";
-const QString NON_VOLATILE_PPI_DISPLAY_EBL_VALUE = "PPI/Display/ebl_value";
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER = "PPI/Display/show_vrm_marker";
-const QString NON_VOLATILE_PPI_DISPLAY_VRM_VALUE = "PPI/Display/vrm_value";
+const QString NON_VOLATILE_PPI_DISPLAY_UNIT("PPI/Display/unit"); //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_RING("PPI/Display/show_ring"); //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS = "PPI/Display/show_compass"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER = "PPI/Display/show_heading_marker"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER = "PPI/Display/show_ebl_marker"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_EBL_VALUE = "PPI/Display/ebl_value"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER = "PPI/Display/show_vrm_marker"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_VRM_VALUE = "PPI/Display/vrm_value"; //exclude
 const QString NON_VOLATILE_PPI_DISPLAY_HEADING_UP = "PPI/Display/heading_up";
 const QString NON_VOLATILE_PPI_DISPLAY_LAST_SCALE = "PPI/Display/last_scale";
 const QString NON_VOLATILE_PPI_DISPLAY_SHOW_GZ = "PPI/Display/show_gz";
 const QString NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1 = "PPI/Display/show_gz1";
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP = "PPI/Display/show_sweep";
-const QString NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA = "PPI/Display/show_arpa";
-const QString NON_VOLATILE_PPI_DISPLAY_USE_OPENGL_SOFTWARE = "PPI/Display/use_opengl_software";
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP = "PPI/Display/show_sweep"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA = "PPI/Display/show_arpa"; //exclude
+const QString NON_VOLATILE_PPI_DISPLAY_USE_OPENGL_SOFTWARE = "PPI/Display/use_opengl_software"; //exclude
 const QString NON_VOLATILE_PPI_DISPLAY_ORIENTATION = "PPI/Display/orientation";
 
 const QString NON_VOLATILE_RADAR_NET_IP_DATA = "Radar/net/ip_data";
@@ -40,26 +40,26 @@ const QString NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1 = "Arpa/params/search_radi
 const QString NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2 = "Arpa/params/search_radius2";
 const QString NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE = "Arpa/params/max_target_size";
 const QString NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK = "Arpa/control/create_arpa_by_click";
-const QString NON_VOLATILE_ARPA_NET_CONFIG = "Arpa/net/config";
-const QString NON_VOLATILE_ARPA_NET_CONFIG_SPASI = "Arpa/net/config/spasi";
-const QString NON_VOLATILE_ARPA_NET_CONFIG_WS = "Arpa/net/config/ws";
+const QString NON_VOLATILE_ARPA_NET_CONFIG = "Arpa/net/config"; //exclude
+const QString NON_VOLATILE_ARPA_NET_CONFIG_SPASI = "Arpa/net/config/spasi"; //exclude
+const QString NON_VOLATILE_ARPA_NET_CONFIG_WS = "Arpa/net/config/ws"; //exclude
 
-const QString NON_VOLATILE_ECHO_NET_CONFIG_WS = "Echo/net/config/ws";
-const QString NON_VOLATILE_ECHO_NET_CONFIG_SPASI = "Echo/net/config/spasi";
+const QString NON_VOLATILE_ECHO_NET_CONFIG_WS = "Echo/net/config/ws"; //exclude
+const QString NON_VOLATILE_ECHO_NET_CONFIG_SPASI = "Echo/net/config/spasi"; //exclude
 
-const QString NON_VOLATILE_GZ_ENABLE_ALARM = "GZ/enable_alarm";
+const QString NON_VOLATILE_GZ_ENABLE_ALARM = "GZ/enable_alarm"; //exclude
 const QString NON_VOLATILE_GZ_MODE = "GZ/mode";
-const QString NON_VOLATILE_GZ_NOTIF_THRESHOLD = "GZ/notif_threshold";
-const QString NON_VOLATILE_GZ_TIMEOUT = "GZ/timeout";
+const QString NON_VOLATILE_GZ_NOTIF_THRESHOLD = "GZ/notif_threshold"; //exclude
+const QString NON_VOLATILE_GZ_TIMEOUT = "GZ/timeout"; //exclude
 const QString NON_VOLATILE_GZ_START_BEARING = "GZ/start_bearing";
 const QString NON_VOLATILE_GZ_END_BEARING = "GZ/end_bearing";
 const QString NON_VOLATILE_GZ_START_RANGE = "GZ/start_range";
 const QString NON_VOLATILE_GZ_END_RANGE = "GZ/end_range";
 
-const QString NON_VOLATILE_GZ_ENABLE_ALARM1 = "GZ/enable_alarm1";
+const QString NON_VOLATILE_GZ_ENABLE_ALARM1 = "GZ/enable_alarm1"; //exclude
 const QString NON_VOLATILE_GZ_MODE1 = "GZ/mode1";
-const QString NON_VOLATILE_GZ_NOTIF_THRESHOLD1 = "GZ/notif_threshold1";
-const QString NON_VOLATILE_GZ_TIMEOUT1 = "GZ/timeout1";
+const QString NON_VOLATILE_GZ_NOTIF_THRESHOLD1 = "GZ/notif_threshold1"; //exclude
+const QString NON_VOLATILE_GZ_TIMEOUT1 = "GZ/timeout1"; //exclude
 const QString NON_VOLATILE_GZ_START_BEARING1 = "GZ/start_bearing1";
 const QString NON_VOLATILE_GZ_END_BEARING1 = "GZ/end_bearing1";
 const QString NON_VOLATILE_GZ_START_RANGE1 = "GZ/start_range1";
@@ -68,26 +68,26 @@ const QString NON_VOLATILE_GZ_END_RANGE1 = "GZ/end_range1";
 const QString NON_VOLATILE_NAV_DATA_LAST_HEADING = "Nav/data/last_heading";
 const QString NON_VOLATILE_NAV_DATA_LAST_LATITUDE = "Nav/data/last_lat";
 const QString NON_VOLATILE_NAV_DATA_LAST_LONGITUDE = "Nav/data/last_lon";
-const QString NON_VOLATILE_NAV_CONTROL_GPS_AUTO = "Nav/control/gps_auto";
-const QString NON_VOLATILE_NAV_CONTROL_HEADING_AUTO = "Nav/control/heading_auto";
-const QString NON_VOLATILE_NAV_NET_CONFIG = "Nav/net/config";
-const QString NON_VOLATILE_NAV_NET_CONFIG_WS = "Nav/net/config/ws";
-const QString NON_VOLATILE_NAV_NET_CONFIG_SPASI = "Nav/net/config/spasi";
+const QString NON_VOLATILE_NAV_CONTROL_GPS_AUTO = "Nav/control/gps_auto"; //exclude
+const QString NON_VOLATILE_NAV_CONTROL_HEADING_AUTO = "Nav/control/heading_auto"; //exclude
+const QString NON_VOLATILE_NAV_NET_CONFIG = "Nav/net/config"; //exclude
+const QString NON_VOLATILE_NAV_NET_CONFIG_WS = "Nav/net/config/ws"; //exclude
+const QString NON_VOLATILE_NAV_NET_CONFIG_SPASI = "Nav/net/config/spasi"; //exclude
 
-const QString NON_VOLATILE_APP_DISPLAY_LANGUAGE = "App/language";
+const QString NON_VOLATILE_APP_DISPLAY_LANGUAGE = "App/language"; //exclude
 
-const QString VOLATILE_NAV_STATUS_HEADING = "Nav/status/heading";
-const QString VOLATILE_NAV_STATUS_GPS = "Nav/status/gps";
+const QString VOLATILE_NAV_STATUS_HEADING = "Nav/status/heading"; //exclude
+const QString VOLATILE_NAV_STATUS_GPS = "Nav/status/gps"; //exclude
 
-const QString VOLATILE_GZ_CONFIRMED = "GZ/confirmed";
-const QString VOLATILE_GZ_TIME = "GZ/time";
+const QString VOLATILE_GZ_CONFIRMED = "GZ/confirmed"; //exclude
+const QString VOLATILE_GZ_TIME = "GZ/time"; //exclude
 
-const QString VOLATILE_GZ_CONFIRMED1 = "GZ/confirmed1";
-const QString VOLATILE_GZ_TIME1 = "GZ/time1";
+const QString VOLATILE_GZ_CONFIRMED1 = "GZ/confirmed1"; //exclude
+const QString VOLATILE_GZ_TIME1 = "GZ/time1"; //exclude
 
 const QString VOLATILE_DISPLAY_PRESET_COLOR = "Radar/display/preset_color";
 
-const QString VOLATILE_PPI_ENABLE_OFF_CENTER = "PPI/display/enable_off_enable";
+const QString VOLATILE_PPI_ENABLE_OFF_CENTER = "PPI/display/enable_off_enable"; //exclude
 
 const QString VOLATILE_RADAR_PARAMS_FILTER_DATA_GAIN = "Radar/params/filter/data/gain";
 const QString VOLATILE_RADAR_PARAMS_FILTER_DATA_RAIN = "Radar/params/filter/data/rain";
