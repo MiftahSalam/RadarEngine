@@ -10,24 +10,12 @@ using namespace RadarEngine;
 RadarConfig *RadarConfig::instance{nullptr};
 
 QStringList RadarConfig::nonVolatileKeys =
-    QStringList() << NON_VOLATILE_PPI_DISPLAY_UNIT
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_RING
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER
-                  << NON_VOLATILE_PPI_DISPLAY_EBL_VALUE
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER
-                  << NON_VOLATILE_PPI_DISPLAY_VRM_VALUE
-                  << NON_VOLATILE_PPI_DISPLAY_HEADING_UP
+    QStringList() << NON_VOLATILE_PPI_DISPLAY_HEADING_UP
                   << NON_VOLATILE_PPI_DISPLAY_LAST_SCALE
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_GZ
                   << NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA
-                  << NON_VOLATILE_PPI_DISPLAY_USE_OPENGL_SOFTWARE
-                  << NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP
                   << NON_VOLATILE_PPI_DISPLAY_ORIENTATION
                   << NON_VOLATILE_RADAR_NET_IP_DATA
-                  << NON_VOLATILE_RADAR_NET_WS
                   << NON_VOLATILE_RADAR_NET_IP_REPORT
                   << NON_VOLATILE_RADAR_NET_IP_CMD
                   << NON_VOLATILE_RADAR_NET_PORT_DATA
@@ -40,36 +28,19 @@ QStringList RadarConfig::nonVolatileKeys =
                   << NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2
                   << NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE
                   << NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK
-                  << NON_VOLATILE_ARPA_NET_CONFIG
-                  << NON_VOLATILE_ARPA_NET_CONFIG_WS
-                  << NON_VOLATILE_ECHO_NET_CONFIG_WS
-                  << NON_VOLATILE_ARPA_NET_CONFIG_SPASI
-                  << NON_VOLATILE_ECHO_NET_CONFIG_SPASI
-                  << NON_VOLATILE_GZ_ENABLE_ALARM
                   << NON_VOLATILE_GZ_MODE
-                  << NON_VOLATILE_GZ_TIMEOUT
-                  << NON_VOLATILE_GZ_NOTIF_THRESHOLD
                   << NON_VOLATILE_GZ_START_BEARING
                   << NON_VOLATILE_GZ_END_BEARING
                   << NON_VOLATILE_GZ_START_RANGE
                   << NON_VOLATILE_GZ_END_RANGE
-                  << NON_VOLATILE_GZ_ENABLE_ALARM1
                   << NON_VOLATILE_GZ_MODE1
-                  << NON_VOLATILE_GZ_TIMEOUT1
-                  << NON_VOLATILE_GZ_NOTIF_THRESHOLD1
                   << NON_VOLATILE_GZ_START_BEARING1
                   << NON_VOLATILE_GZ_END_BEARING1
                   << NON_VOLATILE_GZ_START_RANGE1
                   << NON_VOLATILE_GZ_END_RANGE1
                   << NON_VOLATILE_NAV_DATA_LAST_HEADING
                   << NON_VOLATILE_NAV_DATA_LAST_LATITUDE
-                  << NON_VOLATILE_NAV_DATA_LAST_LONGITUDE
-                  << NON_VOLATILE_NAV_CONTROL_GPS_AUTO
-                  << NON_VOLATILE_NAV_CONTROL_HEADING_AUTO
-                  << NON_VOLATILE_NAV_NET_CONFIG
-                  << NON_VOLATILE_APP_DISPLAY_LANGUAGE
-                  << NON_VOLATILE_NAV_NET_CONFIG_SPASI
-                  << NON_VOLATILE_NAV_NET_CONFIG_WS;
+                  << NON_VOLATILE_NAV_DATA_LAST_LONGITUDE;
 
 RadarConfig::RadarConfig(QObject *parent, QString path) : QObject(parent), filePath(path)
 {
@@ -119,14 +90,6 @@ void RadarConfig::loadConfig()
 {
     qDebug() << Q_FUNC_INFO;
     // volatile
-    volatileVar.insert(VOLATILE_NAV_STATUS_GPS, 0);     //(0->offline, 1->no data, 2->data not valid, 3->data valid)
-    volatileVar.insert(VOLATILE_NAV_STATUS_HEADING, 0); //(0->offline, 1->no data, 2->data not valid, 3->data valid)
-
-    volatileVar.insert(VOLATILE_GZ_CONFIRMED, false);
-    volatileVar.insert(VOLATILE_GZ_TIME, QDateTime::currentSecsSinceEpoch());
-
-    volatileVar.insert(VOLATILE_GZ_CONFIRMED1, false);
-    volatileVar.insert(VOLATILE_GZ_TIME1, QDateTime::currentSecsSinceEpoch());
 
     volatileVar.insert(VOLATILE_DISPLAY_PRESET_COLOR, 0); // display mode index (0 -> day, 1 -> night)
 
@@ -151,7 +114,6 @@ void RadarConfig::loadConfig()
     volatileVar.insert(VOLATILE_RADAR_PARAMS_RANGE_DATA_RANGE, 0);
     volatileVar.insert(VOLATILE_RADAR_STATUS, 0);
     volatileVar.insert(VOLATILE_RADAR_WAKINGUP_TIME, 0);
-    volatileVar.insert(VOLATILE_PPI_ENABLE_OFF_CENTER, false);
 
     /*non volatile*/
     QSettings config(filePath, QSettings::IniFormat);
@@ -183,27 +145,15 @@ void RadarConfig::initConfig()
 {
     qDebug() << Q_FUNC_INFO;
     // non volatile
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_UNIT, 0); // 0: metric, 1: nautical
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_RING, false);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_HEADING_UP, false);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_COMPASS, true);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_HEADING_MARKER, true);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_EBL_MARKER, false);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_EBL_VALUE, 20.4);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_VRM_MARKER, false);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_VRM_VALUE, 1.4);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE, 2000);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ, true);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_GZ1, true);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP, false);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_SWEEP, true);
-    nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_SHOW_ARPA, true);
     nonVolatileVar.insert(NON_VOLATILE_PPI_DISPLAY_ORIENTATION, 0);
 
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_IP_DATA, "127.0.0.1");
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_IP_REPORT, "127.0.0.1");
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_IP_CMD, "127.0.0.1");
-    nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_WS, "ws;Out;127.0.0.1:8885");
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_PORT_DATA, 6132);
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_PORT_REPORT, 6133);
     nonVolatileVar.insert(NON_VOLATILE_RADAR_NET_PORT_CMD, 6131);
@@ -215,27 +165,14 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2, 50);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE, 50);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK, true);
-    nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG, "mqtt;InOut;127.0.0.1:1883:radar");
-    nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG_SPASI, "mqtt;InOut;127.0.0.1:1883:user:pass:arpa:5");
-    nonVolatileVar.insert(NON_VOLATILE_ARPA_NET_CONFIG_WS, "ws;Out;127.0.0.1:8884:5");
 
-    nonVolatileVar.insert(NON_VOLATILE_ECHO_NET_CONFIG_WS, "ws;Out;127.0.0.1:8885");
-    nonVolatileVar.insert(NON_VOLATILE_ECHO_NET_CONFIG_SPASI, "mqtt;InOut;127.0.0.1:1883:user:pass:echo");
-    nonVolatileVar.insert(NON_VOLATILE_APP_DISPLAY_LANGUAGE, "en");
-
-    nonVolatileVar.insert(NON_VOLATILE_GZ_ENABLE_ALARM, true);
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE, 0); // arc mode
-    nonVolatileVar.insert(NON_VOLATILE_GZ_NOTIF_THRESHOLD, 10);
-    nonVolatileVar.insert(NON_VOLATILE_GZ_TIMEOUT, 90);
     nonVolatileVar.insert(NON_VOLATILE_GZ_START_BEARING, 70);
     nonVolatileVar.insert(NON_VOLATILE_GZ_END_BEARING, 120);
     nonVolatileVar.insert(NON_VOLATILE_GZ_START_RANGE, 2000);
     nonVolatileVar.insert(NON_VOLATILE_GZ_END_RANGE, 4200);
 
-    nonVolatileVar.insert(NON_VOLATILE_GZ_ENABLE_ALARM1, true);
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE1, 0); // arc mode
-    nonVolatileVar.insert(NON_VOLATILE_GZ_NOTIF_THRESHOLD1, 10);
-    nonVolatileVar.insert(NON_VOLATILE_GZ_TIMEOUT1, 90);
     nonVolatileVar.insert(NON_VOLATILE_GZ_START_BEARING1, 20);
     nonVolatileVar.insert(NON_VOLATILE_GZ_END_BEARING1, 100);
     nonVolatileVar.insert(NON_VOLATILE_GZ_START_RANGE1, 1000);
@@ -244,10 +181,6 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_NAV_DATA_LAST_HEADING, 0.0);
     nonVolatileVar.insert(NON_VOLATILE_NAV_DATA_LAST_LATITUDE, 0.0);
     nonVolatileVar.insert(NON_VOLATILE_NAV_DATA_LAST_LONGITUDE, 0.0);
-    nonVolatileVar.insert(NON_VOLATILE_NAV_CONTROL_GPS_AUTO, true);
-    nonVolatileVar.insert(NON_VOLATILE_NAV_CONTROL_HEADING_AUTO, true);
-    nonVolatileVar.insert(NON_VOLATILE_NAV_NET_CONFIG, "mqtt;InOut;127.0.0.1:1883:gps");
-    nonVolatileVar.insert(NON_VOLATILE_NAV_NET_CONFIG_SPASI, "mqtt;InOut;127.0.0.1:1883:user:pass:site_data");
 }
 
 void RadarConfig::saveConfig() const
