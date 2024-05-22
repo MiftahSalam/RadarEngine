@@ -28,7 +28,6 @@ const QString NON_VOLATILE_ARPA_PARAMS_MIN_CONTOUR_LEN = "Arpa/params/min_contou
 const QString NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1 = "Arpa/params/search_radius1";
 const QString NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2 = "Arpa/params/search_radius2";
 const QString NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE = "Arpa/params/max_target_size";
-const QString NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK = "Arpa/control/create_arpa_by_click";
 
 const QString NON_VOLATILE_GZ_MODE = "GZ/mode";
 const QString NON_VOLATILE_GZ_START_BEARING = "GZ/start_bearing";
