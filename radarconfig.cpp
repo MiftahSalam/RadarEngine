@@ -27,7 +27,6 @@ QStringList RadarConfig::nonVolatileKeys =
                   << NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1
                   << NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2
                   << NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE
-                  << NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK
                   << NON_VOLATILE_GZ_MODE
                   << NON_VOLATILE_GZ_START_BEARING
                   << NON_VOLATILE_GZ_END_BEARING
@@ -164,7 +163,6 @@ void RadarConfig::initConfig()
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS1, 10);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_SEARCH_RADIUS2, 50);
     nonVolatileVar.insert(NON_VOLATILE_ARPA_PARAMS_MAX_TARGET_SIZE, 50);
-    nonVolatileVar.insert(NON_VOLATILE_ARPA_CONTROL_CREATE_ARPA_BY_CLICK, true);
 
     nonVolatileVar.insert(NON_VOLATILE_GZ_MODE, 0); // arc mode
     nonVolatileVar.insert(NON_VOLATILE_GZ_START_BEARING, 70);
