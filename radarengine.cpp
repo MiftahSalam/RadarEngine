@@ -99,10 +99,12 @@ void RadarEngine::RadarEngine::setupGZ()
 void RadarEngine::RadarEngine::onRadarConfigChange(QString key, QVariant val)
 {
     //    qDebug()<<Q_FUNC_INFO<<"key"<<key<<"val"<<val;
-    if (key == NON_VOLATILE_PPI_DISPLAY_LAST_SCALE)
-        TriggerReqRangeChange(val.toInt());
-    else if (key == NON_VOLATILE_RADAR_TRAIL_TIME || key == NON_VOLATILE_RADAR_TRAIL_ENABLE)
+    if (key == NON_VOLATILE_RADAR_TRAIL_TIME || key == NON_VOLATILE_RADAR_TRAIL_ENABLE)
         TriggerClearTrail();
+#ifndef DISPLAY_ONLY
+    else if (key == NON_VOLATILE_PPI_DISPLAY_LAST_SCALE)
+        TriggerReqRangeChange(val.toInt());
+#endif
     else if (key == NON_VOLATILE_RADAR_NET_IP_DATA)
         TriggerReqRadarSetting();
     else if (key == NON_VOLATILE_GZ_START_RANGE)
@@ -544,7 +546,11 @@ void RadarEngine::RadarEngine::checkRange(uint new_range)
     }
     if ((cur_scale != static_cast<uint>(new_range * 2 / 10)))
     {
+#ifndef DISPLAY_ONLY
         TriggerReqRangeChange(static_cast<int>(cur_scale));
+#else
+        RadarConfig::getInstance("")->setConfig(NON_VOLATILE_PPI_DISPLAY_LAST_SCALE, new_range * 2 / 10);
+#endif
         resetSpokes();
         qDebug() << Q_FUNC_INFO << "range mismatch " << cur_scale << " to " << new_range;
     }
